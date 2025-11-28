@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local SQLite databases
+*.sqlite3
+*.db
+
+# Environment variables (secrets)
+.env
+
+# Node modules (if you use npm)
+node_modules/
+
+# Build directories
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code workspace settings (optional)
+.vscode/
