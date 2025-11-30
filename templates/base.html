@@ -5,23 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Bookshelf{% endblock %}</title>
 
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
 
     <!-- Navbar -->
-    <nav class="bg-white shadow mb-8">
+    <nav class="bg-white dark:bg-gray-800 shadow mb-8 transition-colors duration-300">
         <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
             <a href="/" class="text-2xl font-semibold">📚 Bookshelf</a>
             <div class="space-x-4">
-                <a href="/books" class="text-gray-700 hover:text-indigo-600">Books</a>
-                <a href="/quotes" class="text-gray-700 hover:text-indigo-600">Quotes</a>
-                <a href="/login" class="text-gray-700 hover:text-indigo-600">Login</a>
-                <a href="/register" class="text-gray-700 hover:text-indigo-600">Register</a>
+                <a href="/books" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Books</a>
+                <a href="/quotes" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Quotes</a>
+                <a href="/login" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Login</a>
+                <a href="/register" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Register</a>
+                <button id="theme-toggle" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">🌙</button>
             </div>
         </div>
     </nav>
@@ -30,6 +37,30 @@
     <main class="max-w-5xl mx-auto px-4">
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Theme toggle script -->
+    <script>
+        const html = document.documentElement;
+        const toggleBtn = document.getElementById('theme-toggle');
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            html.classList.add('dark');
+            toggleBtn.textContent = '☀️';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+
+            if (html.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.textContent = '☀️';
+            } else {
+                localStorage.setItem('theme', 'light');
+                toggleBtn.textContent = '🌙';
+            }
+        });
+    </script>
 
 </body>
 </html>
