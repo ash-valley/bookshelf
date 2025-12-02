@@ -1,10 +1,72 @@
 {% extends "base.html" %}
-
 {% block title %}Home — Bookshelf{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-4">Welcome to your Bookshelf</h1>
-<p class="text-lg text-gray-700">
-    This is where your favorite books and quotes live.
-</p>
+
+<div class="py-8">
+
+    {% if current_user.is_authenticated %}
+
+        <!-- Greeting -->
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+            Welcome back, {{ current_user.username }} 🌿
+        </h1>
+
+        <!-- Stats + Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+            <!-- Books Count -->
+            <div class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl p-6 shadow">
+                <p class="text-gray-600 dark:text-gray-300">Your Books</p>
+                <p class="text-4xl font-bold text-teal-700 dark:text-teal-300">{{ book_count }}</p>
+            </div>
+
+            <!-- Quotes Count -->
+            <div class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl p-6 shadow">
+                <p class="text-gray-600 dark:text-gray-300">Saved Quotes</p>
+                <p class="text-4xl font-bold text-teal-700 dark:text-teal-300">{{ quote_count }}</p>
+            </div>
+
+            <!-- Quick Action -->
+            <div class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl p-6 shadow flex flex-col justify-center">
+                <a href="/books" class="text-center bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg transition">
+                    Go to Bookshelf
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Daily Quote -->
+        <div class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl shadow p-8">
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">✨ Quote of the Day</h2>
+            <p class="text-xl italic text-gray-700 dark:text-gray-300">
+                "{{ daily_quote }}"
+            </p>
+        </div>
+
+    {% else %}
+
+        <!-- Landing Page for Guests -->
+        <div class="text-center py-16">
+
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                Welcome to Bookshelf 🌱
+            </h1>
+
+            <p class="text-lg text-gray-700 max-w-xl mx-auto mb-8">
+                Imagine a place where you can be in the company of your books and make a home for them. This little corner of virtual space is made just for such purpose. Make shelves by genre/or reading status, pick and store memorable quotes, choose a background theme to reflect your preference and enjoy your reading journey   </p>
+
+            <a href="/login" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg mr-4 transition">
+                Log In
+            </a>
+            <a href="/register" class="bg-white/80 hover:bg-white text-teal-700 px-6 py-3 rounded-lg transition shadow-sm">
+                Create Account
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
 {% endblock %}

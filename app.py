@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, get_flashed_messages, session
+from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 from dotenv import load_dotenv
 import os
 
-from forms import RegistrationForm
+from forms import RegistrationForm, LoginForm
 from models import db, User  # import your database object
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()  # Load variables from .env
 
@@ -24,13 +25,35 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 @app.route('/')
 def home():
+    if current_user.is_authenticated:
+        book_count = 0   # temporary placeholder
+        quote_count = 0  # temporary placeholder
+        
+        # We'll hook these to the database later.
+        daily_quote = "Reading is dreaming with open eyes."
+
+        return render_template(
+            'home.html',
+            book_count=book_count,
+            quote_count=quote_count,
+            daily_quote=daily_quote
+        )
+    
     return render_template('home.html')
 
 
 @app.route('/books')
-def bookshelf():
+def books():
     return render_template('bookshelf.html')
 
 
@@ -39,9 +62,30 @@ def quotes():
     return render_template('quotes.html')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        # Find user by email
+        user = User.query.filter_by(email=form.email.data).first()
+
+        if user and check_password_hash(user.password, form.password.data):
+            login_user(user)
+            return redirect(url_for("books"))  # Redirect to the bookshelf
+        else:
+            flash("Invalid email or password.", "danger")
+
+    return render_template("login.html", form=form)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out.", "info")
+    return redirect(url_for("login"))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -62,8 +106,8 @@ def register():
             return redirect(url_for('register'))
         
         # Hash password
-        hashed_password = generate_password_hash(form.password.data, method='sha256')
-        
+        hashed_password = generate_password_hash(form.password.data)
+
         # Create new user object
         new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         

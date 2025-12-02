@@ -10,57 +10,72 @@
 
     <script>
         tailwind.config = {
-            darkMode: 'class'
+            darkMode: 'class',
+            corePlugins: {
+                preflight: false
+            }
         }
     </script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-    <!-- Navbar -->
-    <nav class="bg-white dark:bg-gray-800 shadow mb-8 transition-colors duration-300">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-semibold">📚 Bookshelf</a>
-            <div class="space-x-4">
-                <a href="/books" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Books</a>
-                <a href="/quotes" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Quotes</a>
-                <a href="/login" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Login</a>
-                <a href="/register" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Register</a>
-                <button id="theme-toggle" class="text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">🌙</button>
-            </div>
+<body class="text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- 🌿 FIXED BACKGROUND LAYER (our custom effects live here!) -->
+    <div id="spring-background" class="spring-theme">
+            <!-- 🌿 CONTENT ABOVE BACKGROUND -->
+        <div id="content" class="relative z-10">
+
+            <!-- Navbar -->
+            <nav class="bg-white dark:bg-gray-800 shadow mb-8 transition-colors duration-300">
+                <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+                    <a href="/" class="text-2xl font-semibold no-underline text-inherit hover:text-indigo-600 dark:hover:text-indigo-400">📚 Bookshelf</a>
+                    <div class="space-x-4">
+                        {% if current_user.is_authenticated %}
+                            <a href="/books" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Books</a>
+                            <a href="/quotes" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Quotes</a>
+                            <a href="/logout" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Logout</a>
+                        {% else %}
+                            <a href="/login" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Login</a>
+                            <a href="/register" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Register</a>
+                        {% endif %}
+                        <button id="theme-toggle" class="px-2 py-1 rounded-md text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 border-none outline-none focus:outline-none focus:ring-0">🌙</button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Page content -->
+            <main class="max-w-5xl mx-auto px-4">
+                {% block content %}{% endblock %}
+            </main>
+
         </div>
-    </nav>
 
-    <!-- Page content -->
-    <main class="max-w-5xl mx-auto px-4">
-        {% block content %}{% endblock %}
-    </main>
+        <!-- Theme toggle script -->
+        <script>
+            const html = document.documentElement;
+            const toggleBtn = document.getElementById('theme-toggle');
 
-    <!-- Theme toggle script -->
-    <script>
-        const html = document.documentElement;
-        const toggleBtn = document.getElementById('theme-toggle');
-
-        // Load saved theme
-        if (localStorage.getItem('theme') === 'dark') {
-            html.classList.add('dark');
-            toggleBtn.textContent = '☀️';
-        }
-
-        toggleBtn.addEventListener('click', () => {
-            html.classList.toggle('dark');
-
-            if (html.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
+            if (localStorage.getItem('theme') === 'dark') {
+                html.classList.add('dark');
                 toggleBtn.textContent = '☀️';
-            } else {
-                localStorage.setItem('theme', 'light');
-                toggleBtn.textContent = '🌙';
             }
-        });
-    </script>
 
+            toggleBtn.addEventListener('click', () => {
+                html.classList.toggle('dark');
+
+                if (html.classList.contains('dark')) {
+                    localStorage.setItem('theme', 'dark');
+                    toggleBtn.textContent = '☀️';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    toggleBtn.textContent = '🌙';
+                }
+            });
+        </script>
+    </div>
 </body>
 </html>
