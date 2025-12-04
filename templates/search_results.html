@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Search Results — Bookshelf{% endblock %}
+
+{% block content %}
+<div class="py-8">
+
+    <!-- Header -->
+    <h1 class="text-3xl font-bold mb-6">
+        Results for: <span class="text-teal-600 dark:text-teal-300">"{{ query }}"</span>
+    </h1>
+
+    <!-- No results -->
+    {% if books|length == 0 %}
+        <p class="text-gray-700 dark:text-gray-300 text-lg">No books found. Try a different search.</p>
+    {% endif %}
+
+    <!-- Hybrid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {% for book in books %}
+        <div class="p-6 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl shadow flex flex-col">
+
+            <!-- Book Cover -->
+            {% if book.thumbnail %}
+                <img src="{{ book.thumbnail }}" 
+                     alt="Cover of {{ book.title }}"
+                     class="w-32 h-auto mb-4 rounded-lg shadow mx-auto">
+            {% endif %}
+
+            <!-- Book Info -->
+            <h2 class="text-xl font-semibold text-center mb-1">{{ book.title }}</h2>
+
+            {% if book.authors %}
+                <p class="text-gray-600 dark:text-gray-300 text-center mb-3"><em>{{ book.authors }}</em></p>
+            {% endif %}
+
+            {% if book.description %}
+                <p class="text-gray-700 dark:text-gray-300 text-sm mb-4 line-clamp-4">
+                    {{ book.description }}
+                </p>
+            {% endif %}
+
+            <!-- Add Button -->
+            <form action="/add-to-library" method="POST" class="mt-auto">
+                <input type="hidden" name="title" value="{{ book.title }}">
+                <input type="hidden" name="author" value="{{ book.authors }}">
+                <input type="hidden" name="cover_url" value="{{ book.thumbnail }}">
+                <input type="hidden" name="description" value="{{ book.description }}">
+                <input type="hidden" name="year" value="{{ book.year }}">
+                <input type="hidden" name="genres" value="{{ book.genres }}">
+
+                <button type="submit"
+                        class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg transition">
+                    ➕ Add to Library
+                </button>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

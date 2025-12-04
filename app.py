@@ -6,6 +6,7 @@ import os
 from forms import RegistrationForm, LoginForm
 from models import db, User, Book, Quote  # import your database object
 from werkzeug.security import generate_password_hash, check_password_hash
+import requests 
 
 from datetime import date
 import random
@@ -87,6 +88,88 @@ def library():
     return render_template('library.html', books=books)
 
 
+@app.route('/search-books')
+@login_required
+def search_books():
+    query = request.args.get('q')
+
+    # If no search term given, just show an empty page
+    if not query:
+        return render_template('search_results.html', books=[])
+
+    # Google Books API endpoint
+    url = "https://www.googleapis.com/books/v1/volumes"
+    params = {"q": query, "maxResults": 10}
+
+    response = requests.get(url, params=params)
+
+    if response.status_code != 200:
+        flash("Something went wrong while searching for books.", "danger")
+        return render_template('search_results.html', books=[])
+
+    data = response.json()
+
+    books = []
+
+    if "items" in data:
+        for item in data["items"]:
+            info = item.get("volumeInfo", {})
+
+            published = info.get("publishedDate", "")
+            year = published[:4] if len(published) >= 4 and published[:4].isdigit() else ""
+
+            categories = info.get("categories", [])
+            genres = ", ".join(categories) if categories else ""
+
+            books.append({
+                "id": item.get("id"),
+                "title": info.get("title"),
+                "authors": ", ".join(info.get("authors", [])),
+                "description": info.get("description", ""),
+                "thumbnail": info.get("imageLinks", {}).get("thumbnail"),
+                "year": year,
+                "genres": genres
+            })
+
+
+    return render_template("search_results.html", books=books, query=query)
+
+
+@app.route('/add-to-library', methods=['POST'])
+@login_required
+def add_to_library():
+    title = request.form.get("title")
+    author = request.form.get("author")
+    cover_url = request.form.get("cover_url")
+    description = request.form.get("description")
+    year = request.form.get("year")
+    genres = request.form.get("genres")
+
+    # Quick validation
+    if not title:
+        flash("Book must have a title.", "danger")
+        return redirect(url_for('library'))
+
+    # Create new Book object
+    new_book = Book(
+        title=title,
+        author=author,
+        cover_url=cover_url,
+        description=description,
+        year=year,
+        genres=genres,
+        status="to-read",  # Default status
+        user_id=current_user.id
+    )
+
+    # Save to DB
+    db.session.add(new_book)
+    db.session.commit()
+
+    flash(f'"{title}" added to your library!', "success")
+    return redirect(url_for('library'))
+
+
 @app.route('/quotes')
 def quotes():
     return render_template('quotes.html')
@@ -165,6 +248,7 @@ def set_theme(theme):
         current_user.theme = theme
         db.session.commit()        
     return ("", 204)
+
 
 
 if __name__ == '__main__':

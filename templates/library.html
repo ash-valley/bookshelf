@@ -4,6 +4,24 @@
 {% block content %}
 <div class="py-8">
 
+    <!-- Search Bar -->
+    <form action="/search-books" method="GET" class="mb-8">
+        <div class="flex gap-3">
+            <input 
+                type="text" 
+                name="q"
+                placeholder="Search for a book by title or author..."
+                class="flex-grow px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-700/60 shadow focus:outline-none"
+                required
+            >
+            <button 
+                type="submit"
+                class="px-6 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white shadow">
+                Search
+            </button>
+        </div>
+    </form>
+
     <h1 class="text-3xl font-bold mb-6">Your Library</h1>
 
     {% if books %}

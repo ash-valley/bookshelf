@@ -29,6 +29,8 @@ class Book(db.Model):
     cover_url = db.Column(db.String(500))
     description = db.Column(db.Text)
     status = db.Column(db.String(20))   # possible values: read / reading / to-read
+    year = db.Column(db.String(10))
+    genres = db.Column(db.String(500))
 
     # relationship back to the owner (User)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
