@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Themes – Bookshelf{% endblock %}
+
+{% block content %}
+
+<h1 class="text-center mb-10">Choose Your Theme</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+
+    <!-- Spring Theme -->
+    <div class="theme-card spring-card p-5 rounded-xl shadow cursor-pointer transition transform hover:-translate-y-1"
+         onclick="selectTheme('spring')">
+
+        <div class="h-32 rounded-lg mb-4 spring-preview"></div>
+
+        <h3 class="font-bold text-lg mb-1">Spring</h3>
+        <p class="text-sm text-gray-700 dark:text-gray-200">
+            Evokes a feeling of a calm spring pond
+        </p>
+    </div>
+
+    <!-- Midnight Theme -->
+    <div class="theme-card midnight-card p-5 rounded-xl shadow cursor-pointer transition transform hover:-translate-y-1"
+         onclick="selectTheme('midnight')">
+
+        <div class="h-32 rounded-lg mb-4 midnight-preview"></div>
+
+        <h3 class="font-bold text-lg mb-1">Midnight</h3>
+        <p class="text-sm text-gray-700 dark:text-gray-200">
+            Evening atmosphere for quiet reading
+        </p>
+    </div>
+
+    <!-- Fireplace Theme -->
+    <div class="theme-card fireplace-card p-5 rounded-xl shadow cursor-pointer transition transform hover:-translate-y-1"
+         onclick="selectTheme('fireplace')">
+
+        <div class="h-32 rounded-lg mb-4 fireplace-preview"></div>
+
+        <h3 class="font-bold text-lg mb-1">Fireplace</h3>
+        <p class="text-sm text-gray-700 dark:text-gray-200">
+            Sitting by a crackling fireplace in a cozy armchair
+        </p>
+    </div>
+
+<script>
+function selectTheme(name) {
+    fetch("/set-theme/" + name, { method: "POST" })
+        .then(() => window.location.reload());
+}
+</script>
+
+{% endblock %}

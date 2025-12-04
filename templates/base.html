@@ -19,13 +19,28 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 
-<body class="text-gray-900 dark:text-gray-100 transition-colors duration-300">
-
+<body class="
+    text-gray-900 dark:text-gray-100 transition-colors duration-300
+    {% if current_user.is_authenticated %}
+        theme-{{ current_user.theme }}
+    {% endif %}
+">
     <!-- 🌿 FIXED BACKGROUND LAYER (our custom effects live here!) -->
-    <div id="spring-background" class="spring-theme">
+    <div id="spring-background"
+    class="
+        {% if current_user.is_authenticated %}
+            {% if current_user.theme == 'spring' %} spring-theme {% endif %}
+            {% if current_user.theme == 'midnight' %} midnight-theme {% endif %}
+            {% if current_user.theme == 'fireplace' %} fireplace-theme {% endif %}       
+        {% else %}
+            spring-theme
+        {% endif %}
+    ">
             <!-- 🌿 CONTENT ABOVE BACKGROUND -->
         <div id="content" class="relative z-10">
 
@@ -35,8 +50,9 @@
                     <a href="/" class="text-2xl font-semibold no-underline text-inherit hover:text-indigo-600 dark:hover:text-indigo-400">📚 Bookshelf</a>
                     <div class="space-x-4">
                         {% if current_user.is_authenticated %}
-                            <a href="/books" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Books</a>
+                            <a href="/library" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Library</a>
                             <a href="/quotes" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Quotes</a>
+                            <a href="/themes" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Themes</a>
                             <a href="/logout" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Logout</a>
                         {% else %}
                             <a href="/login" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Login</a>
@@ -76,6 +92,6 @@
                 }
             });
         </script>
-    </div>
+    </div>    
 </body>
 </html>

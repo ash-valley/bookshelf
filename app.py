@@ -4,8 +4,11 @@ from dotenv import load_dotenv
 import os
 
 from forms import RegistrationForm, LoginForm
-from models import db, User  # import your database object
+from models import db, User, Book, Quote  # import your database object
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from datetime import date
+import random
 
 load_dotenv()  # Load variables from .env
 
@@ -36,25 +39,52 @@ def load_user(user_id):
 @app.route('/')
 def home():
     if current_user.is_authenticated:
-        book_count = 0   # temporary placeholder
-        quote_count = 0  # temporary placeholder
-        
-        # We'll hook these to the database later.
-        daily_quote = "Reading is dreaming with open eyes."
+
+        # --- Book & Quote counts ---
+        book_count = len(current_user.books)
+        quote_count = len(current_user.quotes)
+
+        # --- Daily Quote (random from user) ---
+        if current_user.quotes:
+            # Seed randomness with today's date so it stays the same all day
+            random.seed(date.today().toordinal())
+
+            selected_quote = random.choice(current_user.quotes)
+            daily_quote = selected_quote.text
+        else:
+            daily_quote = "Reading is dreaming with open eyes."
+
+        # --- Featured Book (random) ---
+        featured_book = None
+        if current_user.books:
+            featured_book = random.choice(current_user.books)
+
+        # --- Recent Books (latest 3) ---
+        recent_books = (
+            Book.query.filter_by(user_id=current_user.id)
+            .order_by(Book.id.desc())
+            .limit(3)
+            .all()
+        )
 
         return render_template(
             'home.html',
             book_count=book_count,
             quote_count=quote_count,
-            daily_quote=daily_quote
+            daily_quote=daily_quote,
+            featured_book=featured_book,
+            recent_books=recent_books
         )
-    
+
+    # not logged in
     return render_template('home.html')
 
 
-@app.route('/books')
-def books():
-    return render_template('bookshelf.html')
+@app.route('/library')
+def library():
+    books = Book.query.filter_by(user_id=current_user.id).all()
+
+    return render_template('library.html', books=books)
 
 
 @app.route('/quotes')
@@ -73,7 +103,7 @@ def login():
 
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for("books"))  # Redirect to the bookshelf
+            return redirect(url_for("home"))  # Redirect to the main page
         else:
             flash("Invalid email or password.", "danger")
 
@@ -120,6 +150,21 @@ def register():
 
 
     return render_template('register.html', form=form)
+
+
+@app.route("/themes")
+@login_required
+def themes():
+    return render_template("themes.html")
+
+
+@app.route("/set-theme/<theme>", methods=["POST"])
+@login_required
+def set_theme(theme):
+    if theme in ["spring", "midnight", "fireplace"]:
+        current_user.theme = theme
+        db.session.commit()        
+    return ("", 204)
 
 
 if __name__ == '__main__':

@@ -12,6 +12,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
+    theme = db.Column(db.String(20), default="spring")
+
     # relationships
     books = db.relationship('Book', backref='owner', lazy=True)
     quotes = db.relationship('Quote', backref='user', lazy=True)
@@ -48,3 +50,6 @@ class Quote(db.Model):
 
     # which user saved the quote
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
+

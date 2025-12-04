@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Library{% endblock %}
+
+{% block content %}
+<div class="py-8">
+
+    <h1 class="text-3xl font-bold mb-6">Your Library</h1>
+
+    {% if books %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            {% for book in books %}
+                <div class="p-6 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl shadow">
+                    <h2 class="text-xl font-semibold">{{ book.title }}</h2>
+
+                    {% if book.author %}
+                        <p class="text-gray-600 dark:text-gray-300 mb-2"><em>{{ book.author }}</em></p>
+                    {% endif %}
+
+                    {% if book.cover_url %}
+                        <img src="{{ book.cover_url }}" class="w-32 mt-2 rounded shadow" alt="Cover image for the book {{ book.title }}">
+                    {% endif %}
+
+                    {% if book.status %}
+                        <p class="mt-3 text-sm text-gray-700 dark:text-gray-300">
+                            Status: <span class="font-medium">{{ book.status }}</span>
+                        </p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+        <p class="text-gray-700 dark:text-gray-300 text-lg">
+            You haven’t added any books yet 📖  
+        </p>
+        <p class="text-gray-500 dark:text-gray-400">
+            Use the “Add Book” option to start building your library.
+        </p>
+    {% endif %}
+
+</div>
+{% endblock %}

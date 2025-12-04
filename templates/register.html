@@ -2,78 +2,78 @@
 {% block title %}Register – Bookshelf{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md mt-10">
+    <div class="auth-card bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md mx-auto mt-10 mb-20">
 
-    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
-        Create Your Account
-    </h2>
+        <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
+            Create Your Account
+        </h2>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            {% for category, msg in messages %}
-                <div class="mb-4 p-3 rounded-md 
-                    {% if category == 'success' %} bg-green-200 text-green-800 
-                    {% elif category == 'danger' %} bg-red-200 text-red-800 
-                    {% else %} bg-blue-200 text-blue-800 {% endif %}">
-                    {{ msg }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="mb-4 p-3 rounded-md 
+                        {% if category == 'success' %} bg-green-200 text-green-800 
+                        {% elif category == 'danger' %} bg-red-200 text-red-800 
+                        {% else %} bg-blue-200 text-blue-800 {% endif %}">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <form method="POST" novalidate>
-        {{ form.hidden_tag() }}
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
 
-        <!-- Username -->
-        <div class="mb-4">
-            {{ form.username.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
-            {{ form.username(class_="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500") }}
+            <!-- Username -->
+            <div class="mb-4">
+                {{ form.username.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.username(class_="auth-field") }}
 
-            {% for error in form.username.errors %}
-                <p class="text-red-500 text-sm">{{ error }}</p>
-            {% endfor %}
-        </div>
+                {% for error in form.username.errors %}
+                    <p class="text-red-500 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
 
-        <!-- Email -->
-        <div class="mb-4">
-            {{ form.email.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
-            {{ form.email(class_="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500") }}
+            <!-- Email -->
+            <div class="mb-4">
+                {{ form.email.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.email(class_="auth-field") }}
 
-            {% for error in form.email.errors %}
-                <p class="text-red-500 text-sm">{{ error }}</p>
-            {% endfor %}
-        </div>
+                {% for error in form.email.errors %}
+                    <p class="text-red-500 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
 
-        <!-- Password -->
-        <div class="mb-4">
-            {{ form.password.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
-            {{ form.password(class_="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500") }}
+            <!-- Password -->
+            <div class="mb-4">
+                {{ form.password.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.password(class_="auth-field") }}
 
-            {% for error in form.password.errors %}
-                <p class="text-red-500 text-sm">{{ error }}</p>
-            {% endfor %}
-        </div>
+                {% for error in form.password.errors %}
+                    <p class="text-red-500 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
 
-        <!-- Confirm Password -->
-        <div class="mb-4">
-            {{ form.confirm_password.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
-            {{ form.confirm_password(class_="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500") }}
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                {{ form.confirm_password.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.confirm_password(class_="auth-field") }}
 
-            {% for error in form.confirm_password.errors %}
-                <p class="text-red-500 text-sm">{{ error }}</p>
-            {% endfor %}
-        </div>
+                {% for error in form.confirm_password.errors %}
+                    <p class="text-red-500 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
 
-        <!-- Submit button -->
-        {{ form.submit(class_="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors") }}
+            <!-- Submit button -->
+            {{ form.submit(class_="auth-submit bg-blue-600 hover:bg-blue-700 text-white") }}
 
-        <p class="text-center text-gray-700 dark:text-gray-300 mt-4">
-            Already have an account?
-            <a href="{{ url_for('login') }}" class="text-blue-600 dark:text-blue-400 hover:underline">
-                Log in
-            </a>
-        </p>
-    </form>
-</div>
+            <p class="text-center text-gray-700 dark:text-gray-300 mt-4">
+                Already have an account?
+                <a href="{{ url_for('login') }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                    Log in
+                </a>
+            </p>
+        </form>
+    </div>
 {% endblock %}
