@@ -127,7 +127,8 @@ main {
 .midnight-theme h2, 
 .midnight-theme h3, 
 .midnight-theme p, 
-.midnight-theme a {
+.midnight-theme a,
+.midnight-theme span {
     color: #dce6f4 !important;
 }
 
@@ -179,7 +180,8 @@ main {
 .fireplace-theme h1,
 .fireplace-theme h2, 
 .fireplace-theme h3,
-.fireplace-theme p {
+.fireplace-theme p,
+.fireplace-theme span {
     color: #210100 !important;
 }
 

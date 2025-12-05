@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} — Book Details{% endblock %}
+
+{% block content %}
+<div class="py-10 max-w-4xl mx-auto">
+
+    <!-- Header Layout -->
+    <div class="flex flex-col md:flex-row gap-10">
+
+        <!-- Cover -->
+        {% if book.cover_url %}
+        <img src="{{ book.cover_url }}"
+             alt="Cover of {{ book.title }}"
+             class="w-48 rounded-xl shadow-lg">
+        {% endif %}
+
+        <!-- Info Section -->
+        <div>
+            <h1 class="text-4xl font-bold mb-2">{{ book.title }}</h1>
+
+            {% if book.author %}
+            <p class="text-lg text-gray-700 dark:text-gray-300 mb-1">
+                By <span class="font-medium">{{ book.author }}</span>
+            </p>
+            {% endif %}
+
+            {% if book.year %}
+            <p class="text-gray-600 dark:text-gray-400 mb-1">
+                Published: {{ book.year }}
+            </p>
+            {% endif %}
+
+            {% if book.genres %}
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Genres: <span class="italic">{{ book.genres }}</span>
+            </p>
+            {% endif %}
+
+            <!-- Status Selector -->
+            <form action="/update-status/{{ book.id }}" method="POST" class="mt-4">
+                <div class="flex gap-3 text-sm">
+
+                    <button type="submit" name="status" value="to-read"
+                        class="px-4 py-2 rounded-full border transition
+                        {% if book.status == 'to-read' %}
+                            bg-teal-600 text-white border-teal-700
+                        {% else %}
+                            bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 a
+                            border-gray-300 dark:border-gray-600
+                            hover:bg-teal-200/50 dark:hover:bg-teal-700/30
+                        {% endif %}">
+                        To Read
+                    </button>
+
+                    <button type="submit" name="status" value="reading"
+                        class="px-4 py-2 rounded-full border transition
+                        {% if book.status == 'reading' %}
+                            bg-indigo-600 text-white border-indigo-700
+                        {% else %}
+                            bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300
+                            border-gray-300 dark:border-gray-600
+                            hover:bg-indigo-200/50 dark:hover:bg-indigo-700/30
+                        {% endif %}">
+                        Reading
+                    </button>
+
+                    <button type="submit" name="status" value="finished"
+                        class="px-4 py-2 rounded-full border transition
+                        {% if book.status == 'finished' %}
+                            bg-emerald-600 text-white border-emerald-700
+                        {% else %}
+                            bg-white/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300
+                            border-gray-300 dark:border-gray-600
+                            hover:bg-emerald-200/50 dark:hover:bg-emerald-700/30
+                        {% endif %}">
+                        Finished
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Description -->
+    {% if book.description %}
+    <div class="mt-10 max-w-3xl">
+        <h2 class="text-2xl font-semibold mb-4">Description</h2>
+        <p class="text-gray-800 dark:text-gray-200 leading-relaxed text-lg">
+            {{ book.description }}
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

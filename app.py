@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, get_flashed_messages, session
+from flask import Flask, render_template, request, flash, redirect, url_for, get_flashed_messages, session, jsonify
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
+from search_service import BookSearchService
 from dotenv import load_dotenv
 import os
 
@@ -15,6 +16,8 @@ load_dotenv()  # Load variables from .env
 
 
 app = Flask(__name__)
+
+BOOKS_PER_PAGE = 12
 
 
 # Read environment variables
@@ -83,56 +86,64 @@ def home():
 
 @app.route('/library')
 def library():
-    books = Book.query.filter_by(user_id=current_user.id).all()
+    # which "page" we are on (1, 2, 3...)
+    page = request.args.get("page", 1, type=int)
+    per_page = BOOKS_PER_PAGE
 
-    return render_template('library.html', books=books)
+    # base query: all this user's books, newest first or whatever order you prefer
+    base_query = Book.query.filter_by(user_id=current_user.id).order_by(Book.id.asc())
+
+    total_books = base_query.count()
+
+    # we want to show *all books up to this page*, not just one page slice
+    limit = per_page * page
+    books = base_query.limit(limit).all()
+
+    has_more = total_books > limit  # is there anything left beyond what we show now?
+
+    return render_template(
+        "library.html",
+        books=books,
+        page=page,
+        has_more=has_more,
+    )
 
 
 @app.route('/search-books')
 @login_required
 def search_books():
-    query = request.args.get('q')
+    query = request.args.get('q', '').strip()
+    sort = request.args.get('sort', 'relevance')
+    page = request.args.get('page', 1, type=int)
 
-    # If no search term given, just show an empty page
-    if not query:
-        return render_template('search_results.html', books=[])
+    service = BookSearchService(query, sort)
+    all_books = service.process()
+    books_page = service.get_page(all_books, page)
 
-    # Google Books API endpoint
-    url = "https://www.googleapis.com/books/v1/volumes"
-    params = {"q": query, "maxResults": 10}
+    has_more = len(all_books) > page * service.per_page
 
-    response = requests.get(url, params=params)
-
-    if response.status_code != 200:
-        flash("Something went wrong while searching for books.", "danger")
-        return render_template('search_results.html', books=[])
-
-    data = response.json()
-
-    books = []
-
-    if "items" in data:
-        for item in data["items"]:
-            info = item.get("volumeInfo", {})
-
-            published = info.get("publishedDate", "")
-            year = published[:4] if len(published) >= 4 and published[:4].isdigit() else ""
-
-            categories = info.get("categories", [])
-            genres = ", ".join(categories) if categories else ""
-
-            books.append({
-                "id": item.get("id"),
-                "title": info.get("title"),
-                "authors": ", ".join(info.get("authors", [])),
-                "description": info.get("description", ""),
-                "thumbnail": info.get("imageLinks", {}).get("thumbnail"),
-                "year": year,
-                "genres": genres
-            })
+    return render_template(
+        "search_results.html",
+        books=books_page,
+        query=query,
+        sort=sort,
+        page=page,
+        has_more=has_more
+    )
 
 
-    return render_template("search_results.html", books=books, query=query)
+@app.route('/search-books-json')
+@login_required
+def search_books_json():
+    query = request.args.get('q', '').strip()
+    sort = request.args.get('sort', 'relevance')
+    page = request.args.get('page', type=int)
+
+    service = BookSearchService(query, sort)
+    all_books = service.process()
+    chunk = service.get_page(all_books, page)
+
+    return jsonify(chunk)
 
 
 @app.route('/add-to-library', methods=['POST'])
@@ -158,7 +169,7 @@ def add_to_library():
         description=description,
         year=year,
         genres=genres,
-        status="to-read",  # Default status
+        status="To-read",  # Default status
         user_id=current_user.id
     )
 
@@ -168,6 +179,45 @@ def add_to_library():
 
     flash(f'"{title}" added to your library!', "success")
     return redirect(url_for('library'))
+
+
+@app.route('/update-status/<int:book_id>', methods=['POST'])
+@login_required
+def update_status(book_id):
+    new_status = request.form.get("status")
+
+    book = Book.query.filter_by(id=book_id, user_id=current_user.id).first()
+
+    if not book:
+        flash("Book not found.", "danger")
+        return redirect(url_for('library'))
+
+    book.status = new_status
+    db.session.commit()
+
+    flash(f"Status updated to '{new_status}'.", "success")
+    return redirect(url_for('library'))
+
+
+@app.route("/delete-book/<int:book_id>", methods=["POST"])
+@login_required
+def delete_book(book_id):
+    book = Book.query.filter_by(id=book_id, user_id=current_user.id).first_or_404()
+    db.session.delete(book)
+    db.session.commit()
+    return redirect(url_for("library"))
+
+
+@app.route('/book/<int:book_id>')
+@login_required
+def book_detail(book_id):
+    book = Book.query.filter_by(id=book_id, user_id=current_user.id).first()
+
+    if not book:
+        flash("Book not found.", "danger")
+        return redirect(url_for('library'))
+
+    return render_template("book_detail.html", book=book)
 
 
 @app.route('/quotes')

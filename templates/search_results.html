@@ -4,61 +4,175 @@
 {% block content %}
 <div class="py-8">
 
-    <!-- Header -->
-    <h1 class="text-3xl font-bold mb-6">
-        Results for: <span class="text-teal-600 dark:text-teal-300">"{{ query }}"</span>
+    <h1 class="text-3xl font-bold mb-4">
+        Results for <span class="text-teal-500">"{{ query }}"</span>
     </h1>
 
-    <!-- No results -->
+    <!-- Sorting -->
+    <form method="GET" class="mb-6 flex gap-4 items-center">
+        <input type="hidden" name="q" value="{{ query }}">
+        <label for="sortSelect" class="sr-only">Sort search results</label>
+        <select id="sortSelect" name="sort"
+                aria-label="Sort search results"
+                onchange="this.form.submit()"
+                class="px-3 py-1 rounded-lg bg-white/80 dark:bg-gray-700/60 shadow">
+            <option value="relevance" {% if sort=='relevance' %}selected{% endif %}>Relevance</option>
+            <option value="year" {% if sort=='year' %}selected{% endif %}>Year</option>
+            <option value="author" {% if sort=='author' %}selected{% endif %}>Author</option>
+        </select>
+    </form>
+
     {% if books|length == 0 %}
-        <p class="text-gray-700 dark:text-gray-300 text-lg">No books found. Try a different search.</p>
+        <p class="text-gray-300 text-lg">No books found.</p>
     {% endif %}
 
-    <!-- Hybrid Layout -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Card Grid -->
+    <div id="loadedContent"
+         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
 
         {% for book in books %}
-        <div class="p-6 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl shadow flex flex-col">
+        <div class="relative group p-6 rounded-xl bg-white/20 dark:bg-gray-800/40 
+                    backdrop-blur-md shadow-lg border border-white/10 flex flex-col items-center">
 
-            <!-- Book Cover -->
+            <!-- Title -->
+            <div class="h-12 flex items-center justify-center px-2">
+                <h2 class="text-xl font-bold leading-tight text-center line-clamp-2">
+                    {{ book.title }}
+                </h2>
+            </div>
+
+            <!-- Author + Year -->
+            <p class="text-gray-300 text-sm italic text-center mb-2">
+                {{ book.authors }}{% if book.year %} • {{ book.year }}{% endif %}
+            </p>
+
+            <!-- Cover -->
             {% if book.thumbnail %}
-                <img src="{{ book.thumbnail }}" 
+            <div class="w-36 aspect-[2/3] overflow-hidden rounded shadow mb-3">
+                <img src="{{ book.thumbnail }}"
                      alt="Cover of {{ book.title }}"
-                     class="w-32 h-auto mb-4 rounded-lg shadow mx-auto">
+                     class="w-full h-full object-cover">
+            </div>
             {% endif %}
 
-            <!-- Book Info -->
-            <h2 class="text-xl font-semibold text-center mb-1">{{ book.title }}</h2>
-
-            {% if book.authors %}
-                <p class="text-gray-600 dark:text-gray-300 text-center mb-3"><em>{{ book.authors }}</em></p>
-            {% endif %}
-
-            {% if book.description %}
-                <p class="text-gray-700 dark:text-gray-300 text-sm mb-4 line-clamp-4">
-                    {{ book.description }}
+            <!-- Genres -->
+            <div class="min-h-[2.5rem] flex flex-col justify-center mb-2">
+                <p class="text-gray-200 text-sm line-clamp-2 text-center">
+                    {{ book.genres }}
                 </p>
+            </div>
+
+            <!-- Description -->
+            {% if book.description %}
+            <p class="text-gray-300 text-sm line-clamp-3 text-center mb-4">
+                {{ book.description }}
+            </p>
             {% endif %}
 
-            <!-- Add Button -->
-            <form action="/add-to-library" method="POST" class="mt-auto">
+            <!-- Add button -->
+            <form action="/add-to-library" method="POST" class="w-full mt-auto">
                 <input type="hidden" name="title" value="{{ book.title }}">
                 <input type="hidden" name="author" value="{{ book.authors }}">
                 <input type="hidden" name="cover_url" value="{{ book.thumbnail }}">
                 <input type="hidden" name="description" value="{{ book.description }}">
                 <input type="hidden" name="year" value="{{ book.year }}">
                 <input type="hidden" name="genres" value="{{ book.genres }}">
-
                 <button type="submit"
-                        class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg transition">
-                    ➕ Add to Library
+                        class="w-full py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 shadow">
+                    + Add to Library
                 </button>
             </form>
-
         </div>
         {% endfor %}
-
     </div>
 
+    {% if has_more %}
+    <div class="flex justify-center mt-12">
+        <button id="loadMoreBtn" type="button"
+                class="px-6 py-2 rounded-full bg-black/40 dark:bg-white/25 
+                       text-white dark:text-black font-semibold shadow-md
+                       hover:bg-black/60 dark:hover:bg-white/50 transition">
+            Load More Results
+        </button>
+    </div>
+    {% endif %}
 </div>
+
+<!-- AJAX LOAD MORE SCRIPT -->
+<script>
+let currentPage = Number("{{ page }}");
+const query = "{{ query }}";
+const sort = "{{ sort }}";
+const loadMoreBtn = document.getElementById("loadMoreBtn");
+const container = document.getElementById("loadedContent");
+
+if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", async () => {
+        currentPage += 1;
+
+        const url = `/search-books-json?q=${encodeURIComponent(query)}&sort=${encodeURIComponent(sort)}&page=${currentPage}`;
+        const response = await fetch(url);
+        const newBooks = await response.json();
+
+        if (newBooks.length === 0) {
+            loadMoreBtn.style.display = "none";
+            return;
+        }
+
+        newBooks.forEach(book => {
+            const div = document.createElement("div");
+            div.className =
+                "relative group p-6 rounded-xl bg-white/20 dark:bg-gray-800/40 " +
+                "backdrop-blur-md shadow-lg border border-white/10 flex flex-col items-center";
+
+            div.innerHTML = `
+                <div class="h-12 flex items-center justify-center px-2">
+                    <h2 class="text-xl font-bold leading-tight text-center line-clamp-2">
+                        ${book.title}
+                    </h2>
+                </div>
+
+                <p class="text-gray-300 text-sm italic text-center mb-2">
+                    ${book.authors}${book.year ? " • " + book.year : ""}
+                </p>
+
+                ${book.thumbnail ? `
+                <div class="w-36 aspect-[2/3] overflow-hidden rounded shadow mb-3">
+                    <img src="${book.thumbnail}" alt="Cover of ${book.title}" class="w-full h-full object-cover">
+                </div>` : ""}
+
+                <div class="min-h-[2.5rem] flex flex-col justify-center mb-2">
+                    <p class="text-gray-200 text-sm line-clamp-2 text-center">
+                        ${book.genres}
+                    </p>
+                </div>
+
+                ${book.description ? `
+                <p class="text-gray-300 text-sm line-clamp-3 text-center mb-4">
+                    ${book.description}
+                </p>` : ""}
+
+                <form action="/add-to-library" method="POST" class="w-full mt-auto">
+                    <input type="hidden" name="title" value="${book.title}">
+                    <input type="hidden" name="author" value="${book.authors}">
+                    <input type="hidden" name="cover_url" value="${book.thumbnail}">
+                    <input type="hidden" name="description" value="${book.description || ''}">
+                    <input type="hidden" name="year" value="${book.year}">
+                    <input type="hidden" name="genres" value="${book.genres}">
+                    <button type="submit"
+                            class="w-full py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 shadow">
+                        + Add to Library
+                    </button>
+                </form>
+            `;
+
+            container.appendChild(div);
+        });
+
+        // Scroll smoothly to last appended element
+        container.lastElementChild.scrollIntoView({ behavior: "smooth" });
+    });
+}
+</script>
+
 {% endblock %}
