@@ -5,14 +5,14 @@ from dotenv import load_dotenv
 import os
 
 from forms import RegistrationForm, LoginForm
-from models import db, User, Book, Quote  # import your database object
+from models import db, User, Book, Collection, Quote  
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests 
 
 from datetime import date
 import random
 
-load_dotenv()  # Load variables from .env
+load_dotenv()  
 
 
 app = Flask(__name__)
@@ -91,7 +91,7 @@ def library():
     per_page = BOOKS_PER_PAGE
 
     # base query: all this user's books, newest first or whatever order you prefer
-    base_query = Book.query.filter_by(user_id=current_user.id).order_by(Book.id.asc())
+    base_query = Book.query.filter_by(user_id=current_user.id).order_by(Book.position.asc(), Book.id.asc())
 
     total_books = base_query.count()
 
@@ -101,12 +101,15 @@ def library():
 
     has_more = total_books > limit  # is there anything left beyond what we show now?
 
+    user_cols = Collection.query.filter_by(user_id=current_user.id).all()
+
     return render_template(
         "library.html",
         books=books,
         page=page,
         has_more=has_more,
-    )
+        collections=user_cols
+    )    
 
 
 @app.route('/search-books')
@@ -169,7 +172,7 @@ def add_to_library():
         description=description,
         year=year,
         genres=genres,
-        status="To-read",  # Default status
+        status="to-read",  # Default status
         user_id=current_user.id
     )
 
@@ -208,6 +211,142 @@ def delete_book(book_id):
     return redirect(url_for("library"))
 
 
+@app.route("/filter-books")
+@login_required
+def filter_books():
+    status = request.args.get("status")
+    genre = request.args.get("genre")
+    author = request.args.get("author")
+
+    # Start with current user's books
+    query = Book.query.filter_by(user_id=current_user.id)
+
+    # Apply filters if present
+    if status:
+        query = query.filter(Book.status == status)
+
+    if genre:
+        query = query.filter(Book.genres.ilike(f"%{genre}%"))
+
+    if author:
+        query = query.filter(Book.author == author)
+
+    books = query.order_by(Book.id.asc()).all()
+
+    # Generate dropdown lists
+    genres_set = {
+        g.strip()
+        for b in current_user.books if b.genres
+        for g in b.genres.split(",")
+    }
+
+    authors_set = {b.author for b in current_user.books if b.author}
+
+    return render_template(
+        "library.html",
+        books=books,
+        page=1,
+        has_more=False,
+        genres=sorted(genres_set),
+        authors=sorted(authors_set)
+    )
+
+
+@app.route("/collections", methods=["GET", "POST"])
+@login_required
+def collections():
+    if request.method == "POST":
+        name = request.form.get("name").strip()
+
+        if not name:
+            flash("Collection must have a name.", "danger")
+            return redirect(url_for("collections"))
+
+        new_col = Collection(name=name, user_id=current_user.id)
+        db.session.add(new_col)
+        db.session.commit()
+
+        flash(f'Collection "{name}" created!', "success")
+        return redirect(url_for("collections"))
+
+    # GET → show list of collections
+    user_cols = Collection.query.filter_by(user_id=current_user.id).all()
+    return render_template("collections.html", collections=user_cols)
+
+
+@app.route("/collection/<int:col_id>")
+@login_required
+def view_collection(col_id):
+    col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
+    return render_template("collection_view.html", collection=col)
+
+
+@app.route("/add-to-collection/<int:book_id>", methods=["POST"])
+@login_required
+def add_to_collection(book_id):
+    collection_id = request.form.get("collection_id")
+
+    col = Collection.query.filter_by(id=collection_id, user_id=current_user.id).first()
+    book = Book.query.filter_by(id=book_id, user_id=current_user.id).first()
+
+    if not col or not book:
+        flash("Invalid collection or book.", "danger")
+        return redirect(url_for("library"))
+
+    if book not in col.books:
+        col.books.append(book)
+        db.session.commit()
+
+    flash("Book added to collection!", "success")
+    return redirect(request.referrer or url_for("library"))
+
+
+@app.route("/remove-from-collection/<int:col_id>/<int:book_id>", methods=["POST"])
+@login_required
+def remove_from_collection(col_id, book_id):
+    col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
+    book = Book.query.filter_by(id=book_id, user_id=current_user.id).first_or_404()
+
+    if book in col.books:
+        col.books.remove(book)
+        db.session.commit()
+
+    flash("Book removed from collection.", "info")
+    return redirect(request.referrer or url_for("view_collection", col_id=col_id))
+
+
+@app.route("/delete-collection/<int:col_id>", methods=["POST"])
+@login_required
+def delete_collection(col_id):
+    col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
+
+    # Remove all book links, but keep the books themselves
+    col.books.clear()
+
+    db.session.delete(col)
+    db.session.commit()
+
+    flash("Collection deleted.", "info")
+    return redirect(url_for("collections"))
+
+
+@app.route("/rename-collection/<int:col_id>", methods=["POST"])
+@login_required
+def rename_collection(col_id):
+    col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
+
+    new_name = request.form.get("new_name", "").strip()
+    if not new_name:
+        flash("Collection name cannot be empty.", "danger")
+        return redirect(url_for("collections"))
+
+    col.name = new_name
+    db.session.commit()
+
+    flash("Collection renamed.", "success")
+    return redirect(url_for("collections"))
+
+
 @app.route('/book/<int:book_id>')
 @login_required
 def book_detail(book_id):
@@ -216,8 +355,22 @@ def book_detail(book_id):
     if not book:
         flash("Book not found.", "danger")
         return redirect(url_for('library'))
+    
+    user_cols = Collection.query.filter_by(user_id=current_user.id).all()
 
-    return render_template("book_detail.html", book=book)
+    return render_template("book_detail.html", book=book, collections=user_cols)
+
+
+@app.route("/update-notes/<int:book_id>", methods=["POST"])
+@login_required
+def update_notes(book_id):
+    book = Book.query.filter_by(id=book_id, user_id=current_user.id).first_or_404()
+
+    book.notes = request.form.get("notes", "").strip()
+    db.session.commit()
+
+    flash("Notes updated.", "success")
+    return redirect(url_for("book_detail", book_id=book.id))
 
 
 @app.route('/quotes')
@@ -298,6 +451,21 @@ def set_theme(theme):
         current_user.theme = theme
         db.session.commit()        
     return ("", 204)
+
+
+@app.route("/update-order", methods=["POST"])
+@login_required
+def update_order():
+    data = request.get_json()
+    order = data.get("order", [])
+
+    for idx, book_id in enumerate(order):
+        book = Book.query.filter_by(id=book_id, user_id=current_user.id).first()
+        if book:
+            book.position = idx
+
+    db.session.commit()
+    return jsonify({"status": "ok"})
 
 
 

@@ -51,6 +51,7 @@
                     <div class="space-x-4">
                         {% if current_user.is_authenticated %}
                             <a href="/library" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Library</a>
+                            <a href="/collections" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Collections</a>
                             <a href="/quotes" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Quotes</a>
                             <a href="/themes" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Themes</a>
                             <a href="/logout" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Logout</a>
@@ -92,6 +93,7 @@
                 }
             });
         </script>
-    </div>    
+    </div> 
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </body>
 </html>

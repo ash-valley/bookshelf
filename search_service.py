@@ -13,10 +13,10 @@ class BookSearchService:
         # Configuration
         self.per_page = 12
         self.banned = {
-            "geology", "sediment", "coastal", "ecology", "vegetation",
-            "soil", "analysis", "report", "field", "basin", "reservoir",
-            "oil", "gas", "management", "erosion", "land", "university",
-            "survey", "research", "study", "texas", "california",
+            "geology", "sediment", "ecology", "vegetation",
+            "analysis", "report", "basin", "reservoir",
+            "gas", "management", "erosion", "university",
+            "survey", "research", "study"
         }
 
         self.literary_clues = {
@@ -33,8 +33,6 @@ class BookSearchService:
         queries = [
             f'intitle:"{self.query}"',
             f'intitle:{self.query}',
-            f'inauthor:"Frank Herbert"',
-            f'inauthor:Herbert',
             self.query
         ]
 
@@ -81,10 +79,6 @@ class BookSearchService:
         for w in self.banned:
             if w in combined_text:
                 return False
-
-        # Accept Herbert always
-        if "herbert" in authors:
-            return True
 
         # Accept if title contains query
         if self.query.lower() in title:

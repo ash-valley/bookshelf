@@ -22,19 +22,47 @@
         </div>
     </form>
 
+    <form action="/filter-books" method="GET"
+        class="flex flex-wrap gap-4 mb-8">
+
+        <!-- Status filter -->
+        <select name="status" aria-label="Filter by status" class="px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-700/70 shadow">
+            <option value="">All statuses</option>
+            <option value="to-read">To Read</option>
+            <option value="reading">Reading</option>
+            <option value="finished">Finished</option>
+        </select>
+
+        <!-- Genre filter -->
+        <select name="genre" aria-label="Filter by genre" class="px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-700/70 shadow">
+            <option value="">All genres</option>
+            {% for g in genres %}
+                <option value="{{ g }}">{{ g }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Author filter -->
+        <select name="author" aria-label="Filter by author" class="px-3 py-2 rounded-lg bg-white/70 dark:bg-gray-700/70 shadow">
+            <option value="">All authors</option>
+            {% for a in authors %}
+                <option value="{{ a }}">{{ a }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="px-6 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white shadow">
+            Apply
+        </button>
+    </form>
+
     <h1 class="text-3xl font-bold mb-6">Your Library</h1>
 
     {% if books %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
             {% for book in books %}
                 <div class="relative group p-4 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 
                             rounded-xl shadow-md hover:shadow-xl transition-transform duration-300 
-                            transform hover:scale-[1.02] border border-white/30 dark:border-gray-700/40">
-                    <a href="/book/{{ book.id }}" 
-                        class="absolute inset-0 z-0"
-                        aria-label="Open {{ book.title }} details page">
-                    </a>
+                            transform hover:scale-[1.02] border border-white/30 dark:border-gray-700/40" data-book-id="{{ book.id }}">
 
                     <div class="relative z-10 flex flex-col items-center text-center">
                         <div class="h-12 flex items-center justify-center px-2">
@@ -53,9 +81,13 @@
                         {% endif %}
 
                         {% if book.cover_url %}
-                            <div class="w-36 aspect-[2/3] overflow-hidden rounded shadow mt-2 mb-2">
-                                <img src="{{ book.cover_url }}" class="w-full h-full object-cover" alt="Cover of {{ book.title }}">
-                            </div>                                
+                            <a href="/book/{{ book.id }}" class="w-36 aspect-[2/3] overflow-hidden rounded shadow mt-2 mb-2 block group-hover:shadow-lg transition cursor-pointer">
+                                <img 
+                                    src="{{ book.cover_url }}" 
+                                    class="w-full h-full object-cover"
+                                    alt="Cover of {{ book.title }}"
+                                >
+                            </a>                               
                         {% endif %}
 
                         <div class="min-h-[2.5rem] flex flex-col justify-center">
@@ -108,9 +140,21 @@
 
                             </div>
                         </form>
+
+                        <form action="/add-to-collection/{{ book.id }}" method="POST" class="mt-2 collection-form">
+                            <select name="collection_id"
+                                    aria-label="Add to collection"
+                                    class="px-2 py-1 rounded bg-white/70 dark:bg-gray-700/70"
+                                    onchange="this.form.submit()">
+                                <option value="">Add to collection...</option>
+                                {% for c in collections %}
+                                    <option value="{{ c.id }}">{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
                     </div>  <!-- closes z-10 content wrapper -->
 
-                    <form action="/delete-book/{{ book.id }}" method="POST" class="delete-form" data-booktitle="{{ book.title }}">
+                    <form action="/delete-book/{{ book.id }}" method="POST" class="delete-form relative z-20" data-booktitle="{{ book.title }}">
                         <button type="submit"
                             class="w-7 h-7 flex items-center justify-center rounded-full
                                 shadow-md hover:scale-110 transition duration-200
@@ -162,7 +206,7 @@
             You haven’t added any books yet 📖  
         </p>
         <p class="text-gray-500 dark:text-gray-400">
-            Use the “Add Book” option to start building your library.
+            Search for a book and then use the “Add Book” option to start building your library.
         </p>    
     {% endif %}
 
@@ -219,6 +263,30 @@ document.getElementById("cancelDelete").onclick = () => {
 document.getElementById("confirmDelete").onclick = () => {
     if (deleteForm) deleteForm.submit();
 };
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const grid = document.getElementById("booksGrid");
+
+    if (!grid) return;
+
+    new Sortable(grid, {
+        animation: 150,
+        ghostClass: "opacity-40",
+        onEnd: function () {
+            const order = [...document.querySelectorAll("[data-book-id]")].map(
+                el => el.dataset.bookId
+            );
+
+            fetch("/update-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ order })
+            });
+        }
+    });
+});
 </script>
 
 {% endblock %}
