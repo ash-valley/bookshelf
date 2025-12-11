@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 from forms import RegistrationForm, LoginForm
-from models import db, User, Book, Collection, Quote  
+from models import db, User, Book, Collection, Quote, CollectionBook  
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests 
 
@@ -17,7 +17,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-BOOKS_PER_PAGE = 12
+BOOKS_PER_PAGE = 20
 
 
 # Read environment variables
@@ -103,12 +103,25 @@ def library():
 
     user_cols = Collection.query.filter_by(user_id=current_user.id).all()
 
+    genres_set = {
+        g.strip()
+        for b in current_user.books if b.genres
+        for g in b.genres.split(",")
+    }
+
+    authors_set = {b.author for b in current_user.books if b.author}
+
+    _ = genres_set
+    _ = authors_set
+
     return render_template(
         "library.html",
         books=books,
         page=page,
         has_more=has_more,
-        collections=user_cols
+        collections=user_cols,
+        genres=sorted(genres_set),
+        authors=sorted(authors_set)
     )    
 
 
@@ -278,7 +291,16 @@ def collections():
 @login_required
 def view_collection(col_id):
     col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
-    return render_template("collection_view.html", collection=col)
+
+    # Load entries in correct order
+    entries = (
+        CollectionBook.query
+        .filter_by(collection_id=col.id)
+        .order_by(CollectionBook.position.asc())
+        .all()
+    )
+
+    return render_template("collection_view.html", collection=col, entries=entries)
 
 
 @app.route("/add-to-collection/<int:book_id>", methods=["POST"])
@@ -293,9 +315,25 @@ def add_to_collection(book_id):
         flash("Invalid collection or book.", "danger")
         return redirect(url_for("library"))
 
-    if book not in col.books:
-        col.books.append(book)
-        db.session.commit()
+    # Prevent duplicates
+    existing = CollectionBook.query.filter_by(collection_id=col.id, book_id=book.id).first()
+    if existing:
+        flash("Book is already in the collection.", "info")
+        return redirect(request.referrer or url_for("library"))
+
+    # Determine next position
+    max_position = db.session.query(db.func.max(CollectionBook.position))\
+                     .filter_by(collection_id=col.id).scalar()
+    next_position = (max_position + 1) if max_position is not None else 0
+
+    # Create new entry
+    entry = CollectionBook(
+        collection_id=col.id,
+        book_id=book.id,
+        position=next_position
+    )
+    db.session.add(entry)
+    db.session.commit()
 
     flash("Book added to collection!", "success")
     return redirect(request.referrer or url_for("library"))
@@ -307,8 +345,10 @@ def remove_from_collection(col_id, book_id):
     col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
     book = Book.query.filter_by(id=book_id, user_id=current_user.id).first_or_404()
 
-    if book in col.books:
-        col.books.remove(book)
+    entry = CollectionBook.query.filter_by(collection_id=col.id, book_id=book.id).first()
+
+    if entry:
+        db.session.delete(entry)
         db.session.commit()
 
     flash("Book removed from collection.", "info")
@@ -319,10 +359,6 @@ def remove_from_collection(col_id, book_id):
 @login_required
 def delete_collection(col_id):
     col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
-
-    # Remove all book links, but keep the books themselves
-    col.books.clear()
-
     db.session.delete(col)
     db.session.commit()
 
@@ -347,6 +383,35 @@ def rename_collection(col_id):
     return redirect(url_for("collections"))
 
 
+@app.route("/update-collection-order/<int:col_id>", methods=["POST"])
+@login_required
+def update_collection_order(col_id):
+    col = Collection.query.filter_by(id=col_id, user_id=current_user.id).first_or_404()
+
+    data = request.get_json(force=True) or {}
+    raw_order = data.get("order") or []
+
+    # Normalize to a clean list of ints
+    order = []
+    for value in raw_order:
+        try:
+            order.append(int(value))
+        except (TypeError, ValueError):
+            continue
+
+    # Update positions based on this order
+    for idx, book_id in enumerate(order):
+        entry = CollectionBook.query.filter_by(
+            collection_id=col.id,
+            book_id=book_id
+        ).first()
+        if entry:
+            entry.position = idx
+
+    db.session.commit()
+    return jsonify({"status": "ok"})
+
+
 @app.route('/book/<int:book_id>')
 @login_required
 def book_detail(book_id):
@@ -356,9 +421,27 @@ def book_detail(book_id):
         flash("Book not found.", "danger")
         return redirect(url_for('library'))
     
+    q = request.args.get("q", "").strip()
+
+    if q:
+        filtered_quotes = [
+            quote for quote in book.quotes
+            if q.lower() in quote.text.lower() or
+               q.lower() in (quote.tags or "").lower() or
+               q.lower() in (quote.comment or "").lower()
+        ]
+    else:
+        filtered_quotes = book.quotes
+
     user_cols = Collection.query.filter_by(user_id=current_user.id).all()
 
-    return render_template("book_detail.html", book=book, collections=user_cols)
+    return render_template(
+        "book_detail.html",
+        book=book,
+        collections=user_cols,
+        quotes=filtered_quotes,
+        quote_filter=q
+    )
 
 
 @app.route("/update-notes/<int:book_id>", methods=["POST"])
@@ -374,8 +457,99 @@ def update_notes(book_id):
 
 
 @app.route('/quotes')
+@login_required
 def quotes():
-    return render_template('quotes.html')
+    search = request.args.get("search", "").strip()
+    sort = request.args.get("sort", "newest")
+
+    # Base query
+    query = Quote.query.filter_by(user_id=current_user.id)
+
+    # Filter by search
+    if search:
+        query = query.filter(
+            Quote.text.ilike(f"%{search}%") |
+            Quote.tags.ilike(f"%{search}%") |
+            Quote.comment.ilike(f"%{search}%")
+        )
+
+    # Sorting options
+    if sort == "newest":
+        query = query.order_by(Quote.id.desc())
+    elif sort == "oldest":
+        query = query.order_by(Quote.id.asc())
+    elif sort == "book":
+        query = query.join(Book).order_by(Book.title.asc())
+    elif sort == "page":
+        query = query.order_by(Quote.page.asc().nullslast())
+
+    quotes = query.all()
+
+    return render_template(
+        "quotes.html",
+        quotes=quotes,
+        search=search,
+        sort=sort
+    )
+
+
+@app.route("/add-quote/<int:book_id>", methods=["POST"])
+@login_required
+def add_quote(book_id):
+    book = Book.query.filter_by(id=book_id, user_id=current_user.id).first_or_404()
+
+    text = request.form.get("text", "").strip()
+    page = request.form.get("page", "").strip()
+    tags = request.form.get("tags", "").strip()
+    comment = request.form.get("comment", "").strip()
+
+    if not text:
+        flash("Quote cannot be empty.", "danger")
+        return redirect(url_for("book_detail", book_id=book_id))
+
+    quote = Quote(
+        text=text,
+        page=page,
+        tags=tags,
+        comment=comment,
+        book_id=book.id,
+        user_id=current_user.id
+    )
+
+    db.session.add(quote)
+    db.session.commit()
+
+    flash("Quote added!", "success")
+    return redirect(url_for("book_detail", book_id=book.id))
+
+
+@app.route("/delete-quote/<int:quote_id>", methods=["POST"])
+@login_required
+def delete_quote(quote_id):
+    quote = Quote.query.filter_by(id=quote_id, user_id=current_user.id).first_or_404()
+
+    book_id = quote.book_id
+    db.session.delete(quote)
+    db.session.commit()
+
+    flash("Quote deleted.", "info")
+    return redirect(url_for("book_detail", book_id=book_id))
+
+
+@app.route("/edit-quote/<int:quote_id>", methods=["POST"])
+@login_required
+def edit_quote(quote_id):
+    quote = Quote.query.filter_by(id=quote_id, user_id=current_user.id).first_or_404()
+
+    quote.text = request.form.get("text", "").strip()
+    quote.page = request.form.get("page", "").strip()
+    quote.tags = request.form.get("tags", "").strip()
+    quote.comment = request.form.get("comment", "").strip()
+
+    db.session.commit()
+    flash("Quote updated!", "success")
+
+    return redirect(url_for("book_detail", book_id=quote.book_id))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -467,6 +641,99 @@ def update_order():
     db.session.commit()
     return jsonify({"status": "ok"})
 
+
+@app.route("/profile")
+@login_required
+def profile():
+    total_books = Book.query.filter_by(user_id=current_user.id).count()
+    total_collections = Collection.query.filter_by(user_id=current_user.id).count()
+    total_quotes = Quote.query.filter_by(user_id=current_user.id).count()
+
+    return render_template(
+        "profile.html",
+        total_books=total_books,
+        total_collections=total_collections,
+        total_quotes=total_quotes
+    )
+
+
+@app.post("/profile/edit")
+@login_required
+def edit_profile():
+    new_username = request.form.get("username")
+    new_email = request.form.get("email")
+
+    if not new_username or not new_email:
+        flash("All fields must be filled.", "error")
+        return redirect("/profile")
+
+    # Check if email already exists
+    existing_email = User.query.filter(
+        User.email == new_email,
+        User.id != current_user.id
+    ).first()
+
+    if existing_email:
+        flash("Email already in use.", "error")
+        return redirect("/profile")
+
+    current_user.username = new_username
+    current_user.email = new_email
+    db.session.commit()
+
+    flash("Profile updated successfully!", "success")
+    return redirect("/profile")
+
+
+@app.post("/profile/change-password")
+@login_required
+def change_password():
+    old_pw = request.form.get("old_password")
+    new_pw = request.form.get("new_password")
+    confirm_pw = request.form.get("confirm_password")
+
+    if not old_pw or not new_pw or not confirm_pw:
+        flash("All fields must be filled.", "error")
+        return redirect("/profile")
+
+    if not check_password_hash(current_user.password, old_pw):
+        flash("Incorrect current password.", "error")
+        return redirect("/profile")
+
+    if new_pw != confirm_pw:
+        flash("New passwords do not match.", "error")
+        return redirect("/profile")
+
+    current_user.password = generate_password_hash(new_pw)
+    db.session.commit()
+
+    flash("Password updated successfully!", "success")
+    return redirect("/profile")
+
+
+@app.post("/profile/delete")
+@login_required
+def delete_account():
+    confirmation = request.form.get("confirm_text")
+
+    if confirmation != "DELETE":
+        flash("You must type DELETE to confirm.", "error")
+        return redirect("/profile")
+
+    # Delete all user-related data
+    Book.query.filter_by(user_id=current_user.id).delete()
+    Quote.query.filter_by(user_id=current_user.id).delete()
+    Collection.query.filter_by(user_id=current_user.id).delete()
+
+    user_id = current_user.id
+
+    logout_user()  # Safely end session
+    User.query.filter_by(id=user_id).delete()
+
+    db.session.commit()
+
+    flash("Your account has been deleted.", "success")
+    return redirect("/")
 
 
 if __name__ == '__main__':

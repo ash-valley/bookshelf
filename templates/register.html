@@ -2,9 +2,9 @@
 {% block title %}Register – Bookshelf{% endblock %}
 
 {% block content %}
-    <div class="auth-card bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md mx-auto mt-10 mb-20">
+    <div class="auth-card bg-white p-8 rounded-xl shadow-md mx-auto mt-10 mb-20">
 
-        <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
+        <h2 class="text-2xl font-bold mb-6 text-gray-900 text-center">
             Create Your Account
         </h2>
 
@@ -27,7 +27,7 @@
 
             <!-- Username -->
             <div class="mb-4">
-                {{ form.username.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.username.label(class_="block text-gray-700 font-semibold mb-1") }}
                 {{ form.username(class_="auth-field") }}
 
                 {% for error in form.username.errors %}
@@ -37,7 +37,7 @@
 
             <!-- Email -->
             <div class="mb-4">
-                {{ form.email.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.email.label(class_="block text-gray-700 font-semibold mb-1") }}
                 {{ form.email(class_="auth-field") }}
 
                 {% for error in form.email.errors %}
@@ -47,7 +47,7 @@
 
             <!-- Password -->
             <div class="mb-4">
-                {{ form.password.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.password.label(class_="block text-gray-700 font-semibold mb-1") }}
                 {{ form.password(class_="auth-field") }}
 
                 {% for error in form.password.errors %}
@@ -57,7 +57,7 @@
 
             <!-- Confirm Password -->
             <div class="mb-4">
-                {{ form.confirm_password.label(class_="block text-gray-700 dark:text-gray-200 font-semibold mb-1") }}
+                {{ form.confirm_password.label(class_="block text-gray-700 font-semibold mb-1") }}
                 {{ form.confirm_password(class_="auth-field") }}
 
                 {% for error in form.confirm_password.errors %}
@@ -68,9 +68,9 @@
             <!-- Submit button -->
             {{ form.submit(class_="auth-submit bg-blue-600 hover:bg-blue-700 text-white") }}
 
-            <p class="text-center text-gray-700 dark:text-gray-300 mt-4">
+            <p class="text-center text-gray-700 mt-4">
                 Already have an account?
-                <a href="{{ url_for('login') }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                <a href="{{ url_for('login') }}" name="loginLink" class="text-blue-600 hover:underline">
                     Log in
                 </a>
             </p>

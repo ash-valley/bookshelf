@@ -11,6 +11,17 @@ main {
     z-index: 2;
 }
 
+.grid-container {
+        display: grid;
+        grid-template-columns: auto 1fr; 
+        align-items: center; 
+        gap: 20px;
+    }
+
+.grid-item-to-move {
+    transform: translateY(-62px);
+}
+
 /* --------------------------- */
 /*   SPRING THEME BACKGROUND  */
 /*   (single multi-layer bg)  */
@@ -90,12 +101,128 @@ main {
     100% { transform: translate(-2%, 3%) scale(1.02); }
 }
 
-.spring-theme #theme-toggle {
-    background-color: #a6e0d7 !important;
+.spring-theme .section-divider {
+    border-color: #03a484;
 }
 
-.spring-theme nav {
-    background-color: #c8eee8 !important;
+.spring-theme [name="bookCard"] {
+    background-color: #b6fcf1cc !important;
+}
+
+.spring-theme [name="recentBookCard"] {
+    background-color: #58beb5 !important;
+}
+
+.spring-theme [name="profileStats"] {
+    background-color: #cdfffad8 !important;
+} 
+
+.spring-theme [name="profileInfo"] {
+    background-color: #cdfffad8 !important;
+} 
+
+.spring-theme nav {  
+    background-color: #04655b !important;
+}
+
+.spring-theme a {
+    color: #7bffe0fb;
+} 
+
+.spring-theme [name="collection_list"] {
+    color: #00453fec !important;
+}
+
+.spring-theme [name="registerLink"] {
+    color: #00453fec !important;
+}
+
+.spring-theme [name="loginLink"] {
+    color: #00453fec !important;
+}
+
+.spring-theme [name="delete"] {
+    background-color: #5edac1b0;
+    border: 1px solid #001c19;
+    color: #001c19;
+}
+
+.spring-theme [name="dragHandle"] {
+    background-color: #5edac1b0;
+    border: 1px solid #001c19;
+    color: #001c19;
+}
+
+.spring-theme [name="deleteModal"] {
+    background-color: #004042;
+    border: 1px solid #001c19;
+    color: #bef0e8f3;
+}
+
+.spring-theme [name="quote_source"] {
+    color: #00453fec !important;
+}
+
+.spring-theme [name="shelfTop"] {
+    background-color: #96f8efd8 !important;
+}
+
+.spring-theme [name="shelfMiddle"] {
+    background-color: #0b9d91dc !important;
+}
+
+.spring-theme [name="shelfBottom"] {
+    background-color: #047166ec !important;
+}
+
+.spring-theme, 
+.spring-theme h1, 
+.spring-theme h2, 
+.spring-theme h3, 
+.spring-theme p, 
+.spring-theme span {
+    color: #00211eec !important;
+}
+
+.spring-theme .card,
+.spring-theme .quote-item,
+.spring-theme .collection-item {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+}
+
+/* SPRING THEME — BUTTONS */
+.spring-theme .btn {
+    background-color: #004d47;
+    border: 1px solid #002b28;
+    color: #dbfffa;
+}
+
+.spring-theme .btn:hover {
+    background-color: #02645d;
+    border-color: #014c45;
+}
+
+.spring-theme .edit-quote-btn,
+.spring-theme .rename-btn {
+    background-color: #238773b0;
+    border: 1px solid #00110f;
+    color: #001c19;
+}
+
+.spring-theme .status-to-read {
+    background-color: #3aa79f;
+    border-color: #2c7d77;
+    color: #e9fffc;
+}
+.spring-theme .status-reading {
+    background-color: #2d8d9c;
+    border-color: #1c6170;
+    color: #e9fffc;
+}
+.spring-theme .status-finished {
+    background-color: #1b6d63;
+    border-color: #0f463e;
+    color: #e9fffc;
 }
 
 /* MIDNIGHT THEME */
@@ -118,10 +245,6 @@ main {
     background-color: #0b1522 !important;
 }
 
-.midnight-theme .nav-link {
-    color: #d8e1f5 !important;
-} 
-
 .midnight-theme, 
 .midnight-theme h1, 
 .midnight-theme h2, 
@@ -129,26 +252,125 @@ main {
 .midnight-theme p, 
 .midnight-theme a,
 .midnight-theme span {
-    color: #dce6f4 !important;
+    color: #dce6f4;
 }
 
+/* MIDNIGHT THEME — BUTTONS */
 .midnight-theme .btn {
-    background-color: #213a5d;
-    border: 1px solid #14233a;
+    background-color: #233fa6;
+    border: 1px solid #03084b;
     color: #dce6f4;
 }
 
 .midnight-theme .btn:hover {
-    background-color: #3955f38a;
+    background-color: #1e368f;
     border-color: #14233a;
+}
+
+.midnight-theme .edit-quote-btn,
+.midnight-theme .rename-btn {
+    background-color: #000e8a9f;
+    border: 1px solid rgba(0, 1, 16, 0.879);
+    color: #dce6f4;
+}
+
+.midnight-theme [name="delete"] {
+    background-color: #1e42f4a4;
+    border: 1px solid #001c19;
+    color: #dce6f4;
+}
+
+.midnight-theme [name="dragHandle"] {
+    background-color: #1e42f4a4;
+    border: 1px solid #001c19;
+    color: #dce6f4;
+}
+
+.midnight-theme [name="deleteModal"] {
+    background-color: #233fa6;
+    border: 1px solid #03084b;
+    color: #dce6f4;
+}
+
+.midnight-theme .status-to-read {
+    background-color: #2d3e70;
+    border-color: #1b2745;
+    color: #e2eaff;
+}
+.midnight-theme .status-reading {
+    background-color: #243460;
+    border-color: #151f3d;
+    color: #e2eaff;
+}
+.midnight-theme .status-finished {
+    background-color: #1a284d;
+    border-color: #0e162d;
+    color: #e2eaff;
 }
 
 .midnight-theme #homestats {
     background-color: #0b1522 !important;
 }
 
+.midnight-theme [name="profileStats"] {
+    background-color: #0b1522 !important;
+} 
+
+.midnight-theme [name="profileInfo"] {
+    background-color: #0b1522 !important;
+} 
+
 .midnight-theme .section-divider {
     border-color: #0b1522;
+}
+
+.midnight-theme [name="bookCard"] {
+    background-color: #bad4f9d4 !important;
+}
+
+.midnight-theme [name="recentBookCard"] {
+    background-color: #bad4f9d4 !important;
+}
+
+.midnight-theme [name="quotesDisplay"] {
+    background-color: #bad4f9d4 !important;
+    color: #0b1522 !important;
+}
+
+.midnight-theme [name="quote_source"] {
+    color: #0b1522 !important;
+}
+
+.midnight-theme [name=collectionDisplay] {
+    background-color: #bad4f9d4 !important;
+}
+
+.midnight-theme [name=collection_list] {
+    color: #0b1522 !important;;
+}
+
+.midnight-theme [name="addCollection"] {
+    color: #0b1522 !important;;
+}
+
+.midnight-theme [name="addtoQuote"] {
+    color: #0b1522 !important;;
+}
+
+.midnight-theme [name=quotesBook] {
+    color: #0b1522 !important;;
+}
+
+.midnight-theme [name=bookCardText] {
+    color: #0b1522 !important;;
+}
+
+.midnight-theme [name="themeName"] {
+    color: #e2eaff !important;
+}
+
+.midnight-theme [name="globalDelete"] {
+    color: #0b1522 !important;;
 }
 
 /* FIREPLACE THEME */
@@ -172,10 +394,37 @@ main {
     background-color: #310000 !important;
 }
 
-.fireplace-theme .nav-link,
+.fireplace-theme [name="bookCard"] {
+    background-color: #ffc9b9d4 !important;
+}
+
 .fireplace-theme a {
-    color: #f8ab7a !important;
+    color: #f8ab7a;
 } 
+
+.fireplace-theme [name="collection_list"] {
+    color: #480301 !important;
+}
+
+.fireplace-theme [name="registerLink"] {
+    color: #480301 !important;
+}
+
+.fireplace-theme [name="loginLink"] {
+    color: #480301 !important;
+}
+
+.fireplace-theme [name="shelfTop"] {
+    background-color: #f4ac80f2 !important;
+}
+
+.fireplace-theme [name="shelfMiddle"] {
+    background-color: #601b0f !important;
+}
+
+.fireplace-theme [name="shelfBottom"] {
+    background-color: #4c1a0f !important;
+}
 
 .fireplace-theme h1,
 .fireplace-theme h2, 
@@ -185,23 +434,78 @@ main {
     color: #210100 !important;
 }
 
-.fireplace-theme #theme-toggle {
-    background-color: #f8ab7a !important;
-}
-
+/* FIREPLACE THEME — BUTTONS */
 .fireplace-theme .btn {
     background-color: #310000;
+    border: 1px solid #1f0301f7;
+    color: #ffb791;
+}
+
+.fireplace-theme .btn:hover {
+    background-color: #640f00;
+    border-color: #3a0600;
+}
+
+.fireplace-theme .edit-quote-btn,
+.fireplace-theme .rename-btn {
+    background-color: #7b2202;
+    border: 1px solid rgba(52, 13, 1, 0.879);
+    color: #f8ab7a;
+}
+
+.fireplace-theme .status-to-read {
+    background-color: #b3462b;
+    border-color: #652a13;
+    color: #ffe4d1;
+}
+.fireplace-theme .status-reading {
+    background-color: #812d1b;
+    border-color: #5a1f0f;
+    color: #ffe4d1;
+}
+
+.fireplace-theme .status-finished {
+    background-color: #582013;
+    border-color: #3e1508;
+    color: #ffe4d1;
+}
+
+.fireplace-theme [name="delete"] {
+    background-color: #720901f3;
     border: 1px solid rgba(29, 0, 0, 0.879);
     color: #f8ab7a;
 }
 
-.fireplace-theme .btn:hover {
-    background-color: #4a0000;
-    border-color: rgba(45, 0, 0, 0.879);
+.fireplace-theme [name="dragHandle"] {
+    background-color: #720901f3;
+    border: 1px solid rgba(29, 0, 0, 0.879);
+    color: #f8ab7a;
+}
+
+.fireplace-theme [name="deleteModal"] {
+    background-color: #310000 !important;
+    border: 1px solid rgba(29, 0, 0, 0.879) !important;
+    color: #f8ab7a !important;
+}
+
+.fireplace-theme [name="quote_source"] {
+    color: #480301 !important;
 }
 
 .fireplace-theme #homestats {
-    background-color: rgba(255, 105, 67, 0.559) !important;
+    background-color: rgba(202, 118, 82, 0.797) !important;
+}
+
+.fireplace-theme [name="profileStats"] {
+    background-color: rgba(202, 118, 82, 0.797) !important;
+} 
+
+.fireplace-theme [name="profileInfo"] {
+    background-color: rgba(202, 118, 82, 0.797) !important;
+} 
+
+.fireplace-theme [name="recentBookCard"] {
+    background-color: #ffc9b9d4 !important;
 }
 
 .fireplace-theme .section-divider {
@@ -266,17 +570,8 @@ main {
     box-shadow: 0 8px 20px rgba(0,0,0,0.18);
 }
 
-.dark .theme-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
 .theme-card h3 {
     color: #1a1a1a;
-}
-
-.dark .theme-card h3 {
-    color: #f1f5f9;
 }
 
 /* ---------------------------------- */
@@ -299,29 +594,6 @@ main {
     box-shadow:
         0 0 12px rgba(158, 74, 45, 0.65),
         0 0 22px rgba(82, 39, 28, 0.45);
-}
-
-/* DARK MODE — override the animated background */
-.dark .spring-theme {
-    background: linear-gradient(135deg, #0f172a, #1e293b, #334155) !important;
-    background-size: cover !important;
-    animation: none !important;
-}
-
-/* Prevent pseudo-elements in dark mode */
-.dark .spring-theme::before,
-.dark .spring-theme::after {
-    display: none !important;
-}
-
-.dark .spring-theme #theme-toggle {
-    background-color: #e3e7ec !important;
-}
-
-.dark .spring-theme .btn {
-    background: rgba(32, 50, 165, 0.336);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: #f1f5f9;
 }
 
 #theme-toggle {
@@ -354,10 +626,6 @@ h1, h2, h3 {
     color: #1a1a1a;
 }
 
-.dark h1, .dark h2, .dark h3 {
-    color: #f1f5f9;
-}
-
 h1 {
     font-size: 2.7rem;      /* slightly oversized: “chapter title” feel */
     line-height: 1.15;
@@ -379,6 +647,36 @@ h3 {
     margin-top: 1.2rem;
 }
 
+[name="notes"] {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+}
+
+[name="q"],
+[name="username"],
+[name="email"],
+[name="old_password"],
+[name="new_password"],
+[name="confirm_password"],
+[name="confirm_text"]
+[name="name"],
+[name="search"],
+[name="sort"],
+[name="author"],
+[name="genre"],
+[name="collection_id"],
+[name="status"] {
+    font-family: 'Lora', serif;    
+}
+
+#addQuote,
+#addtoQuote,
+#edit_text,
+#edit_comment {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+}
+
 .quote-block {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.4rem;
@@ -389,13 +687,8 @@ h3 {
     border-left: 3px solid rgba(0,0,0,0.15);
 }
 
-.dark .quote-block {
-    color: rgba(255,255,255,0.85);
-    border-left-color: rgba(255,255,255,0.2);
-}
-
-.dark h1, .dark h2, .dark h3 {
-    color: #f1f5f9;
+.btn {
+    font-family: 'Lora', serif;
 }
 
 /* Introductory paragraph style */
@@ -405,10 +698,6 @@ h3 {
     letter-spacing: 0.2px;        /* subtle, elegant spacing */
     font-weight: 400;             /* Lora looks lovely at 400/500 */
     color: rgba(0, 0, 0, 0.75);   /* soften the tone a bit */
-}
-
-.dark .intro-text {
-    color: rgba(255, 255, 255, 0.85);
 }
 
 /* --------------------------- */
@@ -426,40 +715,68 @@ h3 {
     color: rgba(0, 0, 0, 0.75);
 }
 
-.dark .intro-text::first-letter {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-/* Elegant Buttons */
+/* UNIVERSAL BUTTON SYSTEM */
 .btn {
-    display: inline-block;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.6rem;                    /* soft rounded aesthetic */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Universal size */
+    height: 2.4rem;              /* Consistent height */
+    padding: 0 1.1rem;           /* Horizontal padding only */
+
+    border-radius: 0.55rem;
     font-size: 1rem;
     font-weight: 500;
     letter-spacing: 0.3px;
+
+    font-family: 'Lora', serif;
+
+    /* Default neutral style (overridden by themes) */
     background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0,0,0,0.12);
     color: #1a1a1a;
-    -webkit-backdrop-filter: blur(6px);       /* glassy feel */    
-    backdrop-filter: blur(6px); 
-    border: 1px solid rgba(0,0,0,0.1);
-    transition: all 0.25s ease;
+
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+
+    transition: all 0.22s ease;
+}
+
+[aria-label="Filter by status"] {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+[aria-label="Filter by genre"] {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+[aria-label="Filter by author"] {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+[aria-label="Sort quotes"] {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+[aria-label="Sort search results"] {
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
 }
 
 .btn:hover {
-    background: rgba(255, 255, 255, 0.45);
-    border-color: rgba(0,0,0,0.2);
     transform: translateY(-1px);
-}
-
-.dark .btn {
-    background: rgba(255,255,255,0.08);
-    color: #f1f5f9;
-    border: 1px solid rgba(255,255,255,0.15);
-}
-
-.dark .btn:hover {
-    background: rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.45);
+    border-color: rgba(0,0,0,0.2);
 }
 
 /* Elegant Section Divider */
@@ -469,10 +786,6 @@ h3 {
     background: rgba(0,0,0,0.25);
     margin: 0.5rem auto 1.5rem auto;
     border-radius: 2px;
-}
-
-.dark .section-divider {
-    background: rgba(255,255,255,0.35);
 }
 
 /* Fix login card width + center alignment */
@@ -488,12 +801,6 @@ h3 {
     border: 1px solid rgba(255,255,255,0.35);
 }
 
-.dark .auth-card {
-    background: rgba(25, 25, 25, 0.55) !important;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-
 .auth-field {
     width: 100% !important;
     border-radius: 10px !important;
@@ -503,12 +810,6 @@ h3 {
     font-family: 'Lora', serif !important;
     font-size: 0.95rem !important;
     box-sizing: border-box !important;
-}
-
-.dark .auth-field {
-    background: #1f2937 !important;
-    border-color: #555 !important;
-    color: white !important;
 }
 
 .auth-submit {
@@ -529,4 +830,71 @@ h3 {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.18);
     background: linear-gradient(135deg, #4338ca, #4f46e5);
+}
+
+/* Modal Input Fix */
+.modal-input, 
+.modal-input input,
+.modal-input textarea {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* Dropdown width fix */
+.collection-select {
+    width: 150px;
+}
+
+[name="saveNotes"] {
+    margin-top: 20px;
+}
+
+[aria-label="Your thoughts"] {
+    margin-top: 10px;
+}
+
+[name="resetBtn"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Universal size */
+    height: 2.4rem;              /* Consistent height */
+    padding: 0 1.1rem;           /* Horizontal padding only */
+
+    border-radius: 0.55rem;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+
+    font-family: 'Lora', serif;
+
+    /* Default neutral style (overridden by themes) */
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0,0,0,0.12);
+    color: #1a1a1a;
+
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+
+    transition: all 0.22s ease;
+}
+
+.input-error {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #b91c1c; /* soft red */
+    opacity: 0.9;
+}
+
+@keyframes sway {
+    0%   { transform: rotate(0deg); }
+    20%  { transform: rotate(0.4deg); }
+    50%  { transform: rotate(-0.4deg); }
+    80%  { transform: rotate(0.4deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.sway-on-load {
+    animation: sway 1.2s ease-in-out;
 }

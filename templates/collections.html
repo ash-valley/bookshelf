@@ -2,7 +2,7 @@
 {% block title %}Collections{% endblock %}
 
 {% block content %}
-<div class="py-10 max-w-4xl mx-auto">
+<div class="py-10 max-w-5xl mx-auto">
 
     <h1 class="text-4xl font-bold mb-6">Your Collections</h1>
 
@@ -12,12 +12,12 @@
             type="text" 
             name="name"
             placeholder="New collection name..."
-            class="flex-grow px-4 py-2 rounded-lg bg-white/80 dark:bg-gray-700/60 shadow"
+            class="flex-grow px-4 py-2 rounded-lg bg-white/80 shadow"
             required
         >
         <button 
             type="submit"
-            class="px-6 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white shadow">
+            class="btn rounded-lg">
             Create
         </button>
     </form>
@@ -25,26 +25,26 @@
     {% if collections %}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {% for col in collections %}
-                <div class="relative p-6 rounded-xl bg-white/70 dark:bg-gray-800/70 shadow-md hover:shadow-xl transition">
+                <div name="quotesDisplay" class="relative p-6 rounded-xl bg-white/70 shadow-md hover:shadow-xl transition">
 
                     <!-- Delete button -->
-                    <form action="{{ url_for('delete_collection', col_id=col.id) }}" 
-                        method="POST"
-                        class="absolute top-3 right-3 z-20">
-                        <button 
-                            type="submit"
-                            aria-label="Delete collection"
-                            onclick="return confirm('Delete this collection? All books will remain saved.')"
-                            class="w-7 h-7 flex items-center justify-center rounded-full bg-red-500/80 text-white hover:scale-110 transition">
+                    <button 
+                        type="button"
+                        name="delete"
+                        aria-label="Delete collection"
+                        class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center
+                            rounded-full shadow hover:scale-110 transition z-20"
+                        data-delete-url="{{ url_for('delete_collection', col_id=col.id) }}"
+                        data-delete-message="Delete this collection?"
+                        >
                             🗑
-                        </button>
-                    </form>
+                    </button>
 
                     <!-- Rename button -->
                     <button
                         type="button"
                         aria-label="Rename collection"
-                        class="rename-btn absolute top-3 right-12 w-7 h-7 flex items-center justify-center rounded-full bg-blue-500/80 text-white hover:scale-110 transition z-20"
+                        class="rename-btn absolute top-3 right-12 w-8 h-8 flex items-center justify-center rounded-full bg-blue-500/80 text-white hover:scale-110 transition z-20"
                         data-id="{{ col.id }}"
                         data-name="{{ col.name }}"
                     >
@@ -52,10 +52,10 @@
                     </button>
 
                     <!-- Collection Content -->
-                    <a href="{{ url_for('view_collection', col_id=col.id) }}">
-                        <h2 class="text-xl font-semibold mb-2">{{ col.name }}</h2>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">
-                            {{ col.books|length }} book{{ col.books|length != 1 and 's' or '' }}
+                    <a href="{{ url_for('view_collection', col_id=col.id) }}" class="no-underline">
+                        <h2 name="bookCardText" name="quotesBook" class="text-xl font-semibold mb-2 no-underline">{{ col.name }}</h2>
+                        <p name="bookCardText" name="quotesBook" class="text-gray-600 text-sm no-underline">
+                            {{ col.collection_entries|length }} book{{ col.collection_entries|length != 1 and 's' or '' }}
                         </p>
                     </a>
 
@@ -63,7 +63,7 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-gray-600 dark:text-gray-300 text-lg">
+        <p class="text-gray-600 text-lg">
             You don't have any collections yet.
         </p>
     {% endif %}
@@ -72,7 +72,7 @@
 
 <!-- Rename Collection Modal -->
 <div id="renameModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden justify-center items-center z-50">
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-xl w-80">
+    <div class="bg-white rounded-lg p-6 shadow-xl w-80">
         <h2 class="text-xl font-semibold mb-4">Rename Collection</h2>
 
         <form id="renameForm" method="POST">
@@ -81,19 +81,19 @@
                 name="new_name"
                 id="renameInput"
                 placeholder="New collection name"
-                class="w-full px-3 py-2 rounded bg-white/80 dark:bg-gray-700/60 mb-4"
+                class="modal-input rounded bg-white/80 mb-4"
                 required
             >
 
             <div class="flex justify-end gap-3">
                 <button type="button"
                         onclick="closeRenameModal()"
-                        class="px-4 py-1 rounded-lg bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600">
+                        class="btn rounded-lg">
                     Cancel
                 </button>
 
                 <button type="submit"
-                        class="px-4 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">
+                        class="btn rounded-lg">
                     Save
                 </button>
             </div>

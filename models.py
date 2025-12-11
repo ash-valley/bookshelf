@@ -41,25 +41,17 @@ class Book(db.Model):
     # quotes that belong to this book
     quotes = db.relationship('Quote', backref='book', lazy=True)
 
-    # collections that include this book
     collections = db.relationship(
-    "Collection",
-    secondary="collection_books",
-    back_populates="books"
-)
+        "Collection",
+        secondary="collection_book",
+        backref="books_list",
+        lazy="dynamic"
+    )
 
 
 # ----------------------
 # COLLECTION MODEL
 # ----------------------
-
-# Association table (Many-to-Many)
-collection_books = db.Table(
-    "collection_books",
-    db.Column("collection_id", db.Integer, db.ForeignKey("collection.id")),
-    db.Column("book_id", db.Integer, db.ForeignKey("book.id"))
-)
-
 
 class Collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,11 +59,27 @@ class Collection(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    books = db.relationship(
-        "Book",
-        secondary=collection_books,
-        back_populates="collections"
+    collection_entries = db.relationship(
+        "CollectionBook",
+        backref="collection",
+        cascade="all, delete-orphan",
+        order_by="CollectionBook.position"
     )
+
+    @property
+    def books(self):
+        return [entry.book for entry in self.collection_entries]
+
+class CollectionBook(db.Model):
+    __tablename__ = "collection_book"   # NOTE: different from "collection_books"!
+
+    id = db.Column(db.Integer, primary_key=True)
+    collection_id = db.Column(db.Integer, db.ForeignKey("collection.id"), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
+    position = db.Column(db.Integer, nullable=True)
+
+    # Relationship to Book
+    book = db.relationship("Book", backref="collection_entries")
 
 
 # ----------------------
@@ -79,8 +87,11 @@ class Collection(db.Model):
 # ----------------------
 class Quote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     text = db.Column(db.Text, nullable=False)
-    author = db.Column(db.String(250))
+    page = db.Column(db.String(50))
+    tags = db.Column(db.String(250))      # comma-separated
+    comment = db.Column(db.Text)          # your personal note
 
     # which book the quote came from
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'))

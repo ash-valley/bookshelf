@@ -15,7 +15,7 @@
         <select id="sortSelect" name="sort"
                 aria-label="Sort search results"
                 onchange="this.form.submit()"
-                class="px-3 py-1 rounded-lg bg-white/80 dark:bg-gray-700/60 shadow">
+                class="px-3 py-1 rounded-lg bg-white/80 shadow">
             <option value="relevance" {% if sort=='relevance' %}selected{% endif %}>Relevance</option>
             <option value="year" {% if sort=='year' %}selected{% endif %}>Year</option>
             <option value="author" {% if sort=='author' %}selected{% endif %}>Author</option>
@@ -31,24 +31,27 @@
          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
 
         {% for book in books %}
-        <div class="relative group p-6 rounded-xl bg-white/20 dark:bg-gray-800/40 
+        <div name="bookCard" class="relative group p-6 rounded-xl bg-white/20  
                     backdrop-blur-md shadow-lg border border-white/10 flex flex-col items-center">
 
             <!-- Title -->
-            <div class="h-12 flex items-center justify-center px-2">
+            <div class="h-12 flex items-center justify-center px-2 mb-3">
                 <h2 class="text-xl font-bold leading-tight text-center line-clamp-2">
                     {{ book.title }}
                 </h2>
             </div>
 
             <!-- Author + Year -->
-            <p class="text-gray-300 text-sm italic text-center mb-2">
-                {{ book.authors }}{% if book.year %} • {{ book.year }}{% endif %}
-            </p>
+            <div class="h-10 flex items-center justify-center px-2">
+                <p class="text-gray-300 text-sm italic text-center mb-2">
+                    {{ book.authors }}{% if book.year %} • {{ book.year }}{% endif %}
+                </p>
+            </div>
+            
 
             <!-- Cover -->
             {% if book.thumbnail %}
-            <div class="w-36 aspect-[2/3] overflow-hidden rounded shadow mb-3">
+            <div class="w-36 aspect-[2/3] overflow-hidden rounded shadow mt-2 mb-2 block group-hover:shadow-lg transition">
                 <img src="{{ book.thumbnail }}"
                      alt="Cover of {{ book.title }}"
                      class="w-full h-full object-cover">
@@ -56,7 +59,7 @@
             {% endif %}
 
             <!-- Genres -->
-            <div class="min-h-[2.5rem] flex flex-col justify-center mb-2">
+            <div class="h-10 flex items-center justify-center px-2">
                 <p class="text-gray-200 text-sm line-clamp-2 text-center">
                     {{ book.genres }}
                 </p>
@@ -78,7 +81,7 @@
                 <input type="hidden" name="year" value="{{ book.year }}">
                 <input type="hidden" name="genres" value="{{ book.genres }}">
                 <button type="submit"
-                        class="w-full py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 shadow">
+                        class="btn w-full rounded-lg">
                     + Add to Library
                 </button>
             </form>
@@ -89,9 +92,9 @@
     {% if has_more %}
     <div class="flex justify-center mt-12">
         <button id="loadMoreBtn" type="button"
-                class="px-6 py-2 rounded-full bg-black/40 dark:bg-white/25 
-                       text-white dark:text-black font-semibold shadow-md
-                       hover:bg-black/60 dark:hover:bg-white/50 transition">
+                class="btn px-6 py-2 rounded-full bg-black/40 
+                       text-white font-semibold shadow-md
+                       hover:bg-black/60 transition">
             Load More Results
         </button>
     </div>
@@ -122,7 +125,7 @@ if (loadMoreBtn) {
         newBooks.forEach(book => {
             const div = document.createElement("div");
             div.className =
-                "relative group p-6 rounded-xl bg-white/20 dark:bg-gray-800/40 " +
+                "relative group p-6 rounded-xl bg-white/20 " +
                 "backdrop-blur-md shadow-lg border border-white/10 flex flex-col items-center";
 
             div.innerHTML = `

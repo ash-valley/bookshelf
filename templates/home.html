@@ -7,61 +7,136 @@
 
     {% if current_user.is_authenticated %}
 
-        <!-- Greeting -->
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-            Welcome back, {{ current_user.username }} 🌿
+        <!-- Greeting with theme-aware icon -->
+        <h1 class="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-2">
+            Welcome back, {{ current_user.username }}
+
+            {% if current_user.theme == "spring" %}
+                🌿
+            {% elif current_user.theme == "midnight" %}
+                🌙
+            {% elif current_user.theme == "fireplace" %}
+                🔥
+            {% else %}
+                🌿
+            {% endif %}
         </h1>
 
+
+        <!-- =============================== -->
+        <!--         FEATURED BOOK           -->
+        <!-- =============================== -->
+
         {% if featured_book %}
-            <div id="homestats" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl shadow p-8 mb-10">
-                <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">📚 Featured Book</h2>
+        <div id="homestats"
+             class="backdrop-blur-md bg-white/70 rounded-xl shadow p-8 mb-10">
 
-                <h3 class="text-xl font-bold">{{ featured_book.title }}</h3>
-                {% if featured_book.author %}
-                    <p class="text-gray-600 dark:text-gray-300 mb-3"><em>{{ featured_book.author }}</em></p>
-                {% endif %}
+            <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+                ❦ <span>Featured Book</span>
+            </h2>
 
-                {% if featured_book.description %}
-                    <p class="text-gray-700 dark:text-gray-300 mb-4">{{ featured_book.description }}</p>
-                {% endif %}
+            <!-- Responsive layout -->
+            <div class="grid-container">
 
+                <!-- Cover -->
                 {% if featured_book.cover_url %}
-                    <img src="{{ featured_book.cover_url }}" alt="Book cover"
-                        class="w-40 rounded-lg shadow border border-gray-300 dark:border-gray-700">
+                <img src="{{ featured_book.cover_url }}"
+                     alt="Featured book cover"
+                     class="grid-item grid-item-to-move w-40 rounded-lg shadow border border-gray-300 mb-6 md:mb-0">
                 {% endif %}
+
+                <!-- Text block -->
+                <div class="grid-item">
+
+                    <h3 class="text-xl font-bold mb-2">
+                        {{ featured_book.title }}
+                    </h3>
+
+                    {% if featured_book.author %}
+                        <p class="text-gray-600 italic mb-3">
+                            {{ featured_book.author }}
+                        </p>
+                    {% endif %}
+
+                    {% if featured_book.description %}
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            {{ featured_book.description }}
+                        </p>
+                    {% endif %}
+
+                </div>
+
             </div>
+        </div>
         {% endif %}
+
+
+
+        <!-- =============================== -->
+        <!--        RECENTLY ADDED           -->
+        <!-- =============================== -->
 
         {% if recent_books %}
-            <div id="homestats" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl shadow p-8 mb-10">
-                <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6">🆕 Recently Added</h2>
+        <div id="homestats"
+             class="backdrop-blur-md bg-white/70 rounded-xl shadow p-8 mb-10">
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {% for book in recent_books %}
-                        <div class="p-4 rounded-xl bg-white/60 dark:bg-gray-900/40 shadow">
-                            <h3 class="font-bold text-lg">{{ book.title }}</h3>
-                            {% if book.author %}
-                                <p class="text-gray-600 dark:text-gray-300"><em>{{ book.author }}</em></p>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+            <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2">
+                ⟡ <span>Recently Added</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                {% for book in recent_books %}
+                <div name="recentBookCard"
+                     class="p-4 rounded-xl bg-white/60 shadow transition-transform hover:scale-[1.02]">
+
+                    <!-- Title -->
+                    <h3 name="bookCardText" class="font-bold text-lg mb-1">
+                        {{ book.title }}
+                    </h3>
+
+                    <!-- Author -->
+                    {% if book.author %}
+                        <p name="bookCardText" class="text-gray-600 italic">
+                            {{ book.author }}
+                        </p>
+                    {% endif %}
                 </div>
+                {% endfor %}
+
             </div>
+        </div>
         {% endif %}
+
 
         <hr class="section-divider">
 
-        <!-- Daily Quote -->
-        <div id="homestats" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-xl shadow p-8">
-            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">✨ Quote of the Day</h2>
-            <p class="text-xl italic text-gray-700 dark:text-gray-300">
+
+
+        <!-- =============================== -->
+        <!--        QUOTE OF THE DAY         -->
+        <!-- =============================== -->
+
+        <div id="homestats"
+             class="backdrop-blur-md bg-white/70 rounded-xl shadow p-8">
+
+            <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2">
+                ✶ <span>Quote of the Day</span>
+            </h2>
+
+            <p class="text-xl italic text-gray-700 leading-relaxed">
                 "{{ daily_quote }}"
             </p>
         </div>
 
+
+
     {% else %}
 
-        <!-- Landing Page for Guests -->
+        <!-- =============================== -->
+        <!--       GUEST LANDING PAGE        -->
+        <!-- =============================== -->
+
         <div class="text-center py-16">
 
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
@@ -70,13 +145,19 @@
 
             <hr class="section-divider">
 
-            <p class="intro-text text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-                Imagine a place where you can be in the company of your books and make a home for them. This little corner of virtual space is made just for such purpose. Make shelves by genre/reading status, pick and store memorable quotes, choose a background theme to reflect your preference and enjoy your reading journey</p>
+            <p class="intro-text text-gray-700 max-w-[38rem] mx-auto mb-8">
+                Imagine a place where you can be in the company of your books and make a home for them.
+                Create shelves by genre or reading status, save memorable quotes, choose a background
+                theme that reflects your mood, and enjoy your reading journey.
+            </p>
 
-            <a href="/login" class="no-underline bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg mr-4 transition">
+            <a href="/login"
+               class="btn no-underline bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg mr-4 transition">
                 Log In
             </a>
-            <a href="/register" class="no-underline bg-white/80 hover:bg-white text-teal-700 px-6 py-3 rounded-lg transition shadow-sm">
+
+            <a href="/register"
+               class="btn no-underline bg-white/80 hover:bg-white text-teal-700 px-6 py-3 rounded-lg transition shadow-sm">
                 Create Account
             </a>
 

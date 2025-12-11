@@ -1,8 +1,82 @@
 {% extends "base.html" %}
-
 {% block title %}Quotes{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">Your Quotes</h1>
-<p class="text-gray-600">Your saved quotes will show up here ✨</p>
+<div class="py-10 max-w-5xl mx-auto">
+
+    <h1 class="text-4xl font-bold mb-8">Your Quotes</h1>
+
+    <form method="GET" class="flex gap-3 mb-8">
+
+    <!-- Left side: Search + Apply + Reset -->
+    <div class="flex items-center gap-3 flex-grow">
+
+        <input 
+            type="text"
+            name="search"
+            placeholder="Search quotes, tags, comments..."
+            value="{{ search }}"
+            class="flex-grow px-4 py-2 rounded-lg bg-white/80 shadow"
+            required 
+        >
+
+        <!-- Apply = .btn class -->
+        <button type="submit"
+                class="btn rounded-lg">
+            Apply
+        </button>
+
+        <!-- Reset = link styled as .btn -->
+        <a href="{{ url_for('quotes') }}" name="resetBtn"
+           class="btn rounded-lg no-underline">
+            Reset
+        </a>
+
+    </div>
+
+    <!-- Right side: Sort dropdown -->
+    <select name="sort"
+            aria-label="Sort quotes"
+            class="px-3 py-2.5 rounded-lg bg-white/80 shadow w-32">
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+        <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest</option>
+        <option value="book" {% if sort == 'book' %}selected{% endif %}>By Book</option>
+        <option value="page" {% if sort == 'page' %}selected{% endif %}>By Page</option>
+    </select>
+
+</form>
+
+    {% if quotes %}
+        <div class="space-y-6">
+            {% for q in quotes %}
+                <div name="quotesDisplay" class="p-6 rounded-lg bg-white/70 shadow relative">
+
+                    <!-- Text -->
+                    <p name="quotesBook" class="italic text-lg">"{{ q.text }}"</p>
+
+                    <!-- Metadata -->
+                    <div name="quotesBook" class="mt-2 text-sm text-gray-700 space-y-1">
+                        {% if q.book %}
+                            <p name="quotesBook">📖 From: <a href="/book/{{ q.book.id }}" name="quote_source" class="underline">{{ q.book.title }}</a></p>
+                        {% endif %}
+                        {% if q.page %}
+                            <p name="quotesBook">Page: {{ q.page }}</p>
+                        {% endif %}
+                        {% if q.tags %}
+                            <p name="quotesBook">Tags: {{ q.tags }}</p>
+                        {% endif %}
+                        {% if q.comment %}
+                            <p name="quotesBook" class="mt-2">💬 {{ q.comment }}</p>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <p class="text-gray-600">No quotes found.</p>
+    {% endif %}
+
+</div>
 {% endblock %}

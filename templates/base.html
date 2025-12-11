@@ -9,8 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
-        tailwind.config = {
-            darkMode: 'class',
+        tailwind.config = {            
             corePlugins: {
                 preflight: false
             }
@@ -25,7 +24,7 @@
 </head>
 
 <body class="
-    text-gray-900 dark:text-gray-100 transition-colors duration-300
+    text-gray-900 transition-colors duration-300
     {% if current_user.is_authenticated %}
         theme-{{ current_user.theme }}
     {% endif %}
@@ -45,21 +44,21 @@
         <div id="content" class="relative z-10">
 
             <!-- Navbar -->
-            <nav class="bg-white dark:bg-gray-800 shadow mb-8 transition-colors duration-300">
+            <nav class="shadow mb-8 transition-colors duration-300">
                 <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-                    <a href="/" class="text-2xl font-semibold no-underline text-inherit hover:text-indigo-600 dark:hover:text-indigo-400">📚 Bookshelf</a>
+                    <a href="/" class="text-2xl font-semibold no-underline text-inherit">📚 Bookshelf</a>
                     <div class="space-x-4">
                         {% if current_user.is_authenticated %}
-                            <a href="/library" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Library</a>
-                            <a href="/collections" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Collections</a>
-                            <a href="/quotes" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Quotes</a>
-                            <a href="/themes" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Themes</a>
-                            <a href="/logout" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Logout</a>
+                            <a href="/library" class="no-underline">Library</a>
+                            <a href="/collections" class="no-underline">Collections</a>
+                            <a href="/quotes" class="no-underline">Quotes</a>
+                            <a href="/themes" class="no-underline">Themes</a>
+                            <a href="/profile" class="no-underline">Profile</a>
+                            <a href="/logout" class="no-underline">Logout</a>
                         {% else %}
-                            <a href="/login" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Login</a>
-                            <a href="/register" class="no-underline text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400">Register</a>
-                        {% endif %}
-                        <button id="theme-toggle" class="px-2 py-1 rounded-md text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 border-none outline-none focus:outline-none focus:ring-0">🌙</button>
+                            <a href="/login" class="no-underline">Login</a>
+                            <a href="/register" class="no-underline">Register</a>
+                        {% endif %}                        
                     </div>
                 </div>
             </nav>
@@ -69,31 +68,106 @@
                 {% block content %}{% endblock %}
             </main>
 
+            <!-- Global Delete Confirmation Modal -->
+            <div id="confirmDeleteModal"
+                class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden justify-center items-center z-[1000]">
+
+                <div class="bg-white rounded-lg p-6 shadow-xl w-80">
+                    <h2 name="globalDelete" class="text-xl font-semibold mb-4">Confirm Deletion</h2>
+
+                    <p name="globalDelete" id="deleteMessage" class="text-gray-700 mb-4">
+                        Are you sure you want to delete this?
+                    </p>
+
+                    <form id="deleteForm" method="POST">
+                        <div class="flex justify-end gap-3">
+                            <button name="deleteModal" type="button"
+                                    onclick="closeDeleteModal()"
+                                    class="btn rounded-lg">
+                                Cancel
+                            </button>
+
+                            <button name="deleteModal" type="button"
+                                    class="btn rounded-lg"
+                                    onclick="document.getElementById('deleteForm').submit()">
+                                Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
-
-        <!-- Theme toggle script -->
-        <script>
-            const html = document.documentElement;
-            const toggleBtn = document.getElementById('theme-toggle');
-
-            if (localStorage.getItem('theme') === 'dark') {
-                html.classList.add('dark');
-                toggleBtn.textContent = '☀️';
-            }
-
-            toggleBtn.addEventListener('click', () => {
-                html.classList.toggle('dark');
-
-                if (html.classList.contains('dark')) {
-                    localStorage.setItem('theme', 'dark');
-                    toggleBtn.textContent = '☀️';
-                } else {
-                    localStorage.setItem('theme', 'light');
-                    toggleBtn.textContent = '🌙';
-                }
-            });
-        </script>
+        
     </div> 
+    
+    <!-- SortableJS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+    <script>
+    function openDeleteModal(message, actionUrl) {
+        document.getElementById("deleteMessage").textContent = message;
+        const form = document.getElementById("deleteForm");
+        form.action = actionUrl;
+
+        const modal = document.getElementById("confirmDeleteModal");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById("confirmDeleteModal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("[data-delete-url]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const url = btn.dataset.deleteUrl;
+                const message = btn.dataset.deleteMessage || "Delete this item?";
+                openDeleteModal(message, url);
+            });
+        });
+    });
+    </script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        document.querySelectorAll("form").forEach(form => {
+            form.setAttribute("novalidate", "true");  // disable browser bubbles
+            
+            form.addEventListener("submit", (e) => {
+                let firstInvalid = form.querySelector(":invalid");
+                if (!firstInvalid) return; // all good
+
+                e.preventDefault(); // STOP submit
+
+                // remove old error if exists
+                let old = firstInvalid.parentElement.querySelector(".input-error");
+                if (old) old.remove();
+
+                // create soft message
+                let msg = document.createElement("div");
+                msg.className = "input-error";
+                msg.textContent = "Please fill out this field.";
+                firstInvalid.parentElement.appendChild(msg);
+
+                // focus field
+                firstInvalid.focus();
+            });
+
+            form.querySelectorAll("input[required]").forEach(input => {
+                input.addEventListener("input", () => {
+                    // remove error when user types
+                    let err = input.parentElement.querySelector(".input-error");
+                    if (err) err.remove();
+                });
+            });
+        });
+
+    });
+    </script>
 </body>
 </html>

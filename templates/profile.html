@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+<div class="py-10 max-w-4xl mx-auto">
+
+    <!-- ========================= -->
+    <!--       PAGE HEADER         -->
+    <!-- ========================= -->
+
+    <h1 class="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-2">
+        ❖ <span>Your Profile</span>
+    </h1>
+
+    <!-- ========================= -->
+    <!--         STATS ROW         -->
+    <!-- ========================= -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+        <div name="profileStats" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 p-6 rounded-xl shadow text-center">
+            <div class="text-4xl mb-2">❦</div>
+            <p class="text-3xl font-bold">{{ total_books }}</p>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Books</p>
+        </div>
+
+        <div name="profileStats" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 p-6 rounded-xl shadow text-center">
+            <div class="text-4xl mb-2">⟡</div>
+            <p class="text-3xl font-bold">{{ total_collections }}</p>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Collections</p>
+        </div>
+
+        <div name="profileStats" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 p-6 rounded-xl shadow text-center">
+            <div class="text-4xl mb-2">✶</div>
+            <p class="text-3xl font-bold">{{ total_quotes }}</p>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Quotes</p>
+        </div>
+
+    </div>
+
+    <hr class="section-divider">
+
+
+    <!-- ========================= -->
+    <!--        PROFILE INFO       -->
+    <!-- ========================= -->
+
+    <div name="profileInfo" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 p-20 rounded-xl shadow mb-10">
+
+        <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2">
+            ❖ <span>Profile Information</span>
+        </h2>
+
+        <p class="mb-2">
+            <strong>Username:</strong> {{ current_user.username }}
+        </p>
+        <p class="mb-2">
+            <strong>Email:</strong> {{ current_user.email }}
+        </p>
+        <p class="mb-4">
+            <strong>Theme:</strong>
+            {% if current_user.theme == "spring" %} 🌿 Spring
+            {% elif current_user.theme == "midnight" %} 🌙 Midnight
+            {% elif current_user.theme == "fireplace" %} 🔥 Fireplace
+            {% endif %}
+        </p>
+
+        <button id="editProfileBtn"
+                class="btn bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg">
+            Edit Profile
+        </button>
+
+        <!-- EDIT PROFILE FORM (HIDDEN INITIALLY) -->
+        <form id="editProfileForm" action="/profile/edit" method="POST" class="mt-6 hidden">
+
+            <div class="mb-4">
+                <label class="block mb-1 font-semibold">New Username</label>
+                <input type="text" name="username" aria-label="Username" placeholder="Username"
+                       class="px-4 py-2 rounded-lg bg-white/80 shadow w-[700px]"
+                       value="{{ current_user.username }}">
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-1 font-semibold">New Email</label>
+                <input type="email" name="email" aria-label="Email" placeholder="e-Mail"
+                       class="px-4 py-2 rounded-lg bg-white/80 shadow w-[700px]"
+                       value="{{ current_user.email }}">
+            </div>
+
+            <button type="submit"
+                class="btn bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg">
+                Save Changes
+            </button>
+        </form>
+
+    </div>
+
+    <hr class="section-divider">
+
+
+    <!-- ========================= -->
+    <!--     CHANGE PASSWORD       -->
+    <!-- ========================= -->
+
+    <div name="profileInfo" class="backdrop-blur-md bg-white/70 dark:bg-gray-800/70 p-20 rounded-xl shadow mb-10">
+
+        <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2">
+            ⚙︎ <span>Change Password</span>
+        </h2>
+
+        <form action="/profile/change-password" method="POST">
+
+            <div class="mb-4">
+                <label class="block mb-1 font-semibold">Current Password</label>
+                <input type="password" name="old_password" aria-label="Old password" placeholder="Old password"
+                       class="px-4 py-2 rounded-lg bg-white/80 shadow w-[700px]" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block mb-1 font-semibold">New Password</label>
+                <input type="password" name="new_password" aria-label="New password" placeholder="New password"
+                       class="px-4 py-2 rounded-lg bg-white/80 shadow w-[700px]" required>
+            </div>
+
+            <div class="mb-6">
+                <label class="block mb-1 font-semibold">Confirm New Password</label>
+                <input type="password" name="confirm_password" aria-label="Confirm password" placeholder="Confirm password"
+                       class="px-4 py-2 rounded-lg bg-white/80 shadow w-[700px]" required>
+            </div>
+
+            <button type="submit"
+                class="btn bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg">
+                Update Password
+            </button>
+
+        </form>
+    </div>
+
+    <hr class="section-divider">
+
+
+    <!-- ========================= -->
+    <!--      DELETE ACCOUNT       -->
+    <!-- ========================= -->
+
+    <div name="profileInfo" class="backdrop-blur-md bg-red-50/60 dark:bg-red-900/30 p-20 rounded-xl shadow">
+
+        <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2 text-red-700 dark:text-red-300">
+            ∴ <span>Account Actions</span>
+        </h2>
+
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Deleting your account will remove all your books, quotes, and collections permanently.
+        </p>
+
+        <button id="deleteAccountBtn"
+                class="btn bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg mb-4">
+            Delete Account
+        </button>
+
+        <!-- DELETE CONFIRMATION FORM (HIDDEN INITIALLY) -->
+        <form id="deleteAccountForm" action="/profile/delete" method="POST" class="hidden">
+
+            <p class="mb-2">
+                Type <strong>DELETE</strong> to confirm:
+            </p>
+
+            <input type="text" name="confirm_text"
+                   class="px-4 py-2 rounded-lg bg-white/80 shadow w-[700px] mb-4"
+                   placeholder="DELETE" required>
+
+            <button type="submit"
+                    class="btn bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg">
+                Confirm Deletion
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- Small JS to toggle inline forms -->
+<script>
+document.getElementById("editProfileBtn").onclick = () => {
+    document.getElementById("editProfileForm").classList.toggle("hidden");
+};
+
+document.getElementById("deleteAccountBtn").onclick = () => {
+    document.getElementById("deleteAccountForm").classList.toggle("hidden");
+};
+</script>
+
+{% endblock %}
