@@ -42,8 +42,3 @@ class LoginForm(FlaskForm):
         validators=[DataRequired()]
     )
     submit = SubmitField("Login")
-
-
-
-
-

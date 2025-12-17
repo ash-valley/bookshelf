@@ -2,7 +2,7 @@
 {% block title %}{{ book.title }} — Book Details{% endblock %}
 
 {% block content %}
-<div class="mt-12">
+<div class="mt-6 sm:mt-10">
 
     <!-- Header Layout -->
     <div class="flex flex-col md:flex-row gap-10">
@@ -11,7 +11,7 @@
         {% if book.cover_url %}
         <img src="{{ book.cover_url }}"
             alt="Cover of {{ book.title }}"
-            class="w-48 rounded-xl shadow-lg">
+            class="w-40 sm:w-48 mx-auto md:mx-0 rounded-xl shadow-lg">
         {% endif %}
 
         <!-- Info Section -->
@@ -40,7 +40,7 @@
 
             <!-- Status Selector -->
             <form action="/update-status/{{ book.id }}" method="POST" class="mt-4">
-                <div class="flex gap-3 text-sm">
+                <div class="flex flex-wrap gap-3 text-sm">
 
                     <button type="submit" name="status" value="to-read"
                         class="status-to-read rounded-full border transition cursor-pointer {% if book.status == 'to-read' %}ring-2 ring-offset-2 ring-black/40{% else %}opacity-50{% endif %}">
@@ -153,6 +153,28 @@
             </button>
         </div>
 
+        <form method="GET" class="flex gap-3 mb-8">
+
+            <input 
+                type="text"
+                name="q"
+                value="{{ quote_filter or '' }}"
+                placeholder="Search within quotes..."
+                class="flex-grow px-4 py-2 rounded-lg bg-white/80 shadow"
+            >
+
+            <button type="submit"
+                    class="btn rounded-lg">
+                Filter
+            </button>
+
+            <a href="{{ url_for('book_detail', book_id=book.id) }}" name="resetBtn"
+            class="btn no-underline rounded-lg">
+                Reset
+            </a>
+
+        </form>
+        
         {% if quotes %}
             <ul class="space-y-4 list-none pl-0">
                 {% for q in quotes %}
@@ -209,29 +231,7 @@
             <p class="text-gray-600 mt-2">
                 No quotes saved yet.
             </p>
-        {% endif %}
-
-        <form method="GET" class="flex gap-3 mb-8">
-
-            <input 
-                type="text"
-                name="q"
-                value="{{ quote_filter or '' }}"
-                placeholder="Search within quotes..."
-                class="flex-grow px-4 py-2 rounded-lg bg-white/80 shadow"
-            >
-
-            <button type="submit"
-                    class="btn rounded-lg">
-                Filter
-            </button>
-
-            <a href="{{ url_for('book_detail', book_id=book.id) }}" name="resetBtn"
-            class="btn no-underline rounded-lg">
-                Reset
-            </a>
-
-        </form>
+        {% endif %}       
 
 </div>
 

@@ -8,11 +8,6 @@
 
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-bold">{{ collection.name }}</h1>
-
-            <form action="{{ url_for('remove_from_collection', col_id=collection.id, book_id=0) }}"
-                method="POST" onsubmit="return false;">
-                <!-- Placeholder – we remove books per-card -->
-            </form>
         </div>
 
         {% if entries %}

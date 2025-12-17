@@ -494,7 +494,7 @@ def quotes():
     elif sort == "oldest":
         query = query.order_by(Quote.id.asc())
     elif sort == "book":
-        query = query.join(Book).order_by(Book.title.asc())
+        query = query = query.outerjoin(Book).order_by(Book.title.asc().nullslast())
     elif sort == "page":
         query = query.order_by(Quote.page.asc().nullslast())
 

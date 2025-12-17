@@ -464,7 +464,9 @@ main {
     color: #e2eaff;
 }
 
-.midnight-theme #homestats {
+.midnight-theme #homestatsBook,
+.midnight-theme #homestatsRecent,
+.midnight-theme #homestatsQuotes {
     background-color: #0b1522 !important;
 }
 
@@ -672,7 +674,9 @@ main {
     color: #480301 !important;
 }
 
-.fireplace-theme #homestats {
+.fireplace-theme #homestatsBook,
+.fireplace-theme #homestatsRecent,
+.fireplace-theme #homestatsQuotes {
     background-color: rgba(202, 118, 82, 0.797) !important;
 }
 
@@ -1336,6 +1340,10 @@ h3 {
         margin-left: 1rem;
         margin-right: 1rem;
     }
+
+    textarea[name="notes"] {
+        min-height: 140px;
+    }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
@@ -1354,6 +1362,10 @@ h3 {
     #collectionGrid > div[name="shelfMiddle"],
     #collectionGrid > div[name="shelfBottom"],
     #collectionGrid > div.hidden.sm\:flex {
+        display: none !important;
+    }
+
+    #booksGrid > div.hidden.sm\:flex {
         display: none !important;
     }
 }

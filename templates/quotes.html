@@ -46,7 +46,7 @@
             {% if quotes %}
                 <div class="space-y-6">
                     {% for q in quotes %}
-                        <div name="quotesDisplay" class="pt-2 pb-2 p-6 rounded-lg bg-white/70 shadow flex flex-col gap-3">
+                        <div name="quotesDisplay" class="p-6 rounded-lg bg-white/70 shadow flex flex-col gap-3">
                             
                             <div class="flex flex-col gap-2">
                                 <p name="quotesBook" class="italic text-lg">"{{ q.text }}"</p>                             
@@ -71,7 +71,7 @@
                                     type="button"
                                     aria-label="Delete quote"
                                     name="delete"
-                                    class="self-end w-8 h-8 rounded-full transition flex-shrink-0 mb-2"
+                                    class="self-end w-8 h-8 rounded-full transition flex-shrink-0"
                                     data-delete-message="Delete this quote?"
                                     data-delete-url="{{ url_for('delete_quote', quote_id=q.id) }}"
                                 >
