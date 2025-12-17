@@ -11,16 +11,91 @@ main {
     z-index: 2;
 }
 
+/* ---------------------------------- */
+/* NAVBAR DEPTH SYSTEM (UNIVERSAL)     */
+/* ---------------------------------- */
+
+.navbar {
+    position: relative;
+    z-index: 20;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Soft divider under navbar */
+.navbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+    width: 100%;
+    height: 3px;
+    pointer-events: none;
+}
+
+
 .grid-container {
         display: grid;
         grid-template-columns: auto 1fr; 
-        align-items: center; 
+        place-items: start; 
         gap: 20px;
     }
 
 .grid-item-to-move {
-    transform: translateY(-62px);
+    transform: translateY(-25px); 
 }
+
+/* ============================= */
+/* LIBRARY VERTICAL SHELVES     */
+/* ============================= */
+
+.library-frame {
+    position: relative;
+    display: grid;
+    grid-template-columns: 28px 1fr 28px; 
+    gap: 16px;
+    align-items: stretch;
+
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.library-shelf {
+    border-radius: 8px;
+
+    background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.22),
+        rgba(0,0,0,0.14),
+        rgba(0,0,0,0.22)
+    );
+
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
+}
+
+.library-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+
+    background:
+        linear-gradient(to right,
+            rgba(0,0,0,0.35) 0%,
+            rgba(0,0,0,0.0) 12%,
+            rgba(0,0,0,0.0) 88%,
+            rgba(0,0,0,0.35) 100%
+        );
+}
+
+.library-content {
+    position: relative;
+    z-index: 2;
+}
+
 
 /* --------------------------- */
 /*   SPRING THEME BACKGROUND  */
@@ -101,6 +176,14 @@ main {
     100% { transform: translate(-2%, 3%) scale(1.02); }
 }
 
+.spring-theme .navbar::after {
+    background: linear-gradient(
+        to bottom,
+        rgba(3, 164, 132, 0.45),
+        rgba(3, 164, 132, 0)
+    );
+}
+
 .spring-theme .section-divider {
     border-color: #03a484;
 }
@@ -122,12 +205,16 @@ main {
 } 
 
 .spring-theme nav {  
-    background-color: #04655b !important;
+    background-color: #035a51be !important;
 }
 
 .spring-theme a {
     color: #7bffe0fb;
 } 
+
+.spring-theme [name=bookShelfNav] {
+    color: #7bffe0fb !important;
+}
 
 .spring-theme [name="collection_list"] {
     color: #00453fec !important;
@@ -163,16 +250,52 @@ main {
     color: #00453fec !important;
 }
 
+.spring-theme .library-shelf {
+    background: linear-gradient(
+        to right,
+        rgba(1, 92, 71, 0.22),
+        rgba(1, 131, 101, 0.22),
+        rgba(1, 92, 71, 0.22)
+    );
+
+    box-shadow:
+        inset 2px 0 4px rgba(0, 173, 124, 0.35),
+        inset -2px 0 6px rgba(0, 36, 26, 0.35),
+        0 0 12px rgba(0, 57, 41, 0.35);
+}
+
+.spring-theme .library-frame::before {
+    background:
+        linear-gradient(to right,
+            rgba(0, 32, 25, 0.4) 0%,
+            rgba(0, 58, 45, 0.4) 12%,
+            rgba(0, 58, 45, 0.4) 88%,
+            rgba(0, 32, 25, 0.4) 100%
+        );
+}
+
 .spring-theme [name="shelfTop"] {
-    background-color: #96f8efd8 !important;
+    background-color: #6fc9c0a9 !important;
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
 }
 
 .spring-theme [name="shelfMiddle"] {
-    background-color: #0b9d91dc !important;
+    background-color: rgba(1, 84, 66, 0.4) !important;
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
 }
 
 .spring-theme [name="shelfBottom"] {
-    background-color: #047166ec !important;
+    background-color: rgba(0, 58, 45, 0.4) !important;
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
 }
 
 .spring-theme, 
@@ -245,6 +368,14 @@ main {
     background-color: #0b1522 !important;
 }
 
+.midnight-theme .navbar::after {
+    background: linear-gradient(
+        to bottom,
+        rgba(220, 230, 244, 0.22),  
+        rgba(220, 230, 244, 0.0)
+    );
+}
+
 .midnight-theme, 
 .midnight-theme h1, 
 .midnight-theme h2, 
@@ -253,6 +384,31 @@ main {
 .midnight-theme a,
 .midnight-theme span {
     color: #dce6f4;
+}
+
+.midnight-theme [name=bookShelfNav] {
+    color: #dce6f4 !important;
+}
+
+.midnight-theme [name="shelfTop"] {
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
+}
+
+.midnight-theme [name="shelfMiddle"] {
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
+}
+
+.midnight-theme [name="shelfBottom"] {
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
 }
 
 /* MIDNIGHT THEME — BUTTONS */
@@ -394,6 +550,18 @@ main {
     background-color: #310000 !important;
 }
 
+.fireplace-theme .navbar::after {
+    background: linear-gradient(
+        to bottom,
+        rgba(86, 12, 0, 0.65),
+        rgba(86, 12, 0, 0)
+    );
+}
+
+.fireplace-theme [name=bookShelfNav] {
+    color: #f8ab7a !important;
+}
+
 .fireplace-theme [name="bookCard"] {
     background-color: #ffc9b9d4 !important;
 }
@@ -415,15 +583,27 @@ main {
 }
 
 .fireplace-theme [name="shelfTop"] {
-    background-color: #f4ac80f2 !important;
+    background-color: #ff9c5f82 !important;
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
 }
 
 .fireplace-theme [name="shelfMiddle"] {
-    background-color: #601b0f !important;
+    background-color: #601b0f71 !important;
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
 }
 
 .fireplace-theme [name="shelfBottom"] {
-    background-color: #4c1a0f !important;
+    background-color: #5614055e !important;
+    box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.12),
+        inset -2px 0 6px rgba(0,0,0,0.35),
+        0 0 12px rgba(0,0,0,0.25);
 }
 
 .fireplace-theme h1,
@@ -669,6 +849,15 @@ h3 {
     font-family: 'Lora', serif;    
 }
 
+[name="navBarLink"] {
+    font-size: 20px !important;
+}
+
+[name="bookShelfNav"] {
+    font-family: Playfair Display, serif;
+    font-size: 34px !important;
+}
+
 #addQuote,
 #addtoQuote,
 #edit_text,
@@ -687,6 +876,10 @@ h3 {
     border-left: 3px solid rgba(0,0,0,0.15);
 }
 
+[name="quotesBook"].italic {
+    margin-bottom: 0;
+}
+
 .btn {
     font-family: 'Lora', serif;
 }
@@ -698,6 +891,15 @@ h3 {
     letter-spacing: 0.2px;        /* subtle, elegant spacing */
     font-weight: 400;             /* Lora looks lovely at 400/500 */
     color: rgba(0, 0, 0, 0.75);   /* soften the tone a bit */
+}
+
+.icon svg {
+    width: 1.1em;
+    height: 1.1em;
+    margin-left: 0.35rem;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    opacity: 0.85;
 }
 
 /* --------------------------- */
@@ -743,41 +945,70 @@ h3 {
     transition: all 0.22s ease;
 }
 
-[aria-label="Filter by status"] {
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 0.3px;
-}
-
-[aria-label="Filter by genre"] {
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 0.3px;
-}
-
-[aria-label="Filter by author"] {
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 0.3px;
-}
-
-[aria-label="Sort quotes"] {
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 0.3px;
-}
-
-[aria-label="Sort search results"] {
-    font-size: 0.9rem;
-    font-weight: 300;
-    letter-spacing: 0.3px;
-}
-
 .btn:hover {
     transform: translateY(-1px);
     background: rgba(255,255,255,0.45);
     border-color: rgba(0,0,0,0.2);
 }
+
+/* ============================= */
+/* MOBILE MENU BUTTON            */
+/* ============================= */
+
+.mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 10px; /* matches your rounded language */
+    border: 1px solid rgba(255,255,255,0.25);
+
+    background: rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+
+    transition: all 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+    background: rgba(255,255,255,0.28);
+    transform: translateY(-1px);
+}
+
+.menu-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.bookshelf-logo {
+    height: 60px;
+    width: auto;
+    display: block;
+}
+
+.bookshelf-logo-hero {
+    height: 100px;
+    width: auto;
+}
+
+.navbar-brand {
+    margin-left: -24px;
+}
+
+[aria-label="Filter by status"],
+[aria-label="Filter by genre"],
+[aria-label="Filter by author"],
+[aria-label="Sort quotes"],
+[aria-label="Sort search results"]{
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+
 
 /* Elegant Section Divider */
 .section-divider {
@@ -898,3 +1129,233 @@ h3 {
 .sway-on-load {
     animation: sway 1.2s ease-in-out;
 }
+
+[name="collectionBookCover"] {
+    transform: translateY(10px)
+}
+
+
+/* ============================= */
+/* MOBILE: Library layout fixes  */
+/* ============================= */
+
+@media (max-width: 640px) {
+
+    /* Remove decorative shelves on mobile */
+    .library-frame {
+        grid-template-columns: 1fr;
+    }
+
+    .library-shelf {
+        display: none;
+    }
+
+    .library-content {
+        width: 100%
+    }
+
+    .library-frame {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+
+    form[action="/search-books"] .flex {
+        flex-direction: column;
+    }
+
+    form[action="/search-books"] input {
+        width: 100%;
+    }
+
+    form[action="/search-books"] button {
+        width: 100%;
+        height: 2.8rem;
+    }
+
+    form[action="/library"] {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    form[action="/library"] > * {
+        width: 100%;
+    }
+
+    form[action="/library"] .btn {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    form[action="/library"] select,
+    form[action="/library"] button,
+    form[action="/library"] a {
+        width: 100%;
+        height: 2.6rem;
+    }
+
+    .status-to-read,
+    .status-reading,
+    .status-finished {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .drag-handle {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
+
+    [name="delete"] {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    [name="shelfTop"],
+    [name="shelfMiddle"],
+    [name="shelfBottom"] {
+        display: none;
+    }
+
+    /* Unified horizontal rhythm */
+    nav.navbar > div {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    main {
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+    }
+
+    /* Reset desktop logo offset */
+    .navbar-brand {
+        margin-left: -6px;
+    }
+
+    /* Make logo smaller on phones */
+    .bookshelf-logo {
+        height: 44px;
+    }
+
+    /* Stack nav content cleanly */
+    .navbar-collapse {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding-top: 0.75rem;
+    }
+
+    /* Nav links become readable list */
+    [name="navBarLink"] {
+        font-size: 1.1rem !important;
+        padding: 0.25rem 0;
+        display: block;
+    }
+
+    form[action="/search-books"] {
+        width: 100%;
+    }
+
+    form[action="/search-books"] input {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    #mobileMenu a {
+        font-size: 1.1rem;
+        padding: 0.25rem 0;
+    }
+
+    nav.navbar {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    main {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .library-content,
+    .book-detail,
+    .collection-view {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #mobileMenu {
+        margin-top: 0.5rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.18);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    }
+
+    #mobileMenu a {
+        padding: 0.35rem 0;
+        display: block;
+    }  
+    
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .grid-item-to-move {
+        transform: none;
+    }
+
+    .grid-container img {
+        margin: 0 auto;
+    }
+
+    .drag-handle {
+        display: none;
+    }
+
+    input.w-\[700px\] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    #editProfileForm,
+    #changePassword,
+    #deleteAccountForm {
+        margin-right: 20px;
+    }
+
+    #addQuoteModal,
+    #editQuoteModal {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+
+    nav.navbar {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    main {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+
+    #collectionGrid > div[name="shelfTop"],
+    #collectionGrid > div[name="shelfMiddle"],
+    #collectionGrid > div[name="shelfBottom"],
+    #collectionGrid > div.hidden.sm\:flex {
+        display: none !important;
+    }
+}
+
+

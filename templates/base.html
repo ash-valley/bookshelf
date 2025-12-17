@@ -44,24 +44,63 @@
         <div id="content" class="relative z-10">
 
             <!-- Navbar -->
-            <nav class="shadow mb-8 transition-colors duration-300">
-                <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-                    <a href="/" class="text-2xl font-semibold no-underline text-inherit">📚 Bookshelf</a>
-                    <div class="space-x-4">
+            <nav class="navbar mb-8 transition-colors duration-300">
+                <div class="max-w-5xl mx-auto px-2 py-2 flex justify-between items-center">
+                    <a href="/" class="navbar-brand flex items-center gap-3 no-underline text-inherit">
                         {% if current_user.is_authenticated %}
-                            <a href="/library" class="no-underline">Library</a>
-                            <a href="/collections" class="no-underline">Collections</a>
-                            <a href="/quotes" class="no-underline">Quotes</a>
-                            <a href="/themes" class="no-underline">Themes</a>
-                            <a href="/profile" class="no-underline">Profile</a>
-                            <a href="/logout" class="no-underline">Logout</a>
+                            {% set theme = current_user.theme %}
                         {% else %}
-                            <a href="/login" class="no-underline">Login</a>
-                            <a href="/register" class="no-underline">Register</a>
+                            {% set theme = 'spring' %}
+                        {% endif %}
+
+                        <img
+                            src="{{ url_for('static', filename='img/logo_bookshelf_' ~ theme ~ '.png') }}"
+                            name="logoImage"
+                            alt="Bookshelf logo"
+                            class="bookshelf-logo"
+                        >
+                        <span name="bookShelfNav" class="text-2xl font-semibold tracking-wide">
+                            Bookshelf
+                        </span>
+                    </a>
+                    <button
+                        id="mobileMenuToggle"
+                        aria-label="Toggle menu"
+                        class="sm:hidden mobile-menu-btn"
+                    >
+                        <span class="menu-icon">☰</span>
+                    </button>
+                    <div class="nav-links hidden sm:flex space-x-4">
+                        {% if current_user.is_authenticated %}
+                            <a href="/library" name="navBarLink" class="no-underline">Library</a>
+                            <a href="/collections" name="navBarLink" class="no-underline">Collections</a>
+                            <a href="/quotes" name="navBarLink" class="no-underline">Quotes</a>
+                            <a href="/themes" name="navBarLink" class="no-underline">Themes</a>
+                            <a href="/profile" name="navBarLink" class="no-underline">Profile</a>
+                            <a href="/logout" name="navBarLink" class="no-underline">Logout</a>
+                        {% else %}
+                            <a href="/login" name="navBarLink" class="no-underline">Login</a>
+                            <a href="/register" name="navBarLink" class="no-underline">Register</a>
                         {% endif %}                        
                     </div>
                 </div>
             </nav>
+
+            <div id="mobileMenu"
+                class="hidden sm:hidden px-6 py-4 space-y-3">
+
+                {% if current_user.is_authenticated %}
+                    <a href="/library" class="block">Library</a>
+                    <a href="/collections" class="block">Collections</a>
+                    <a href="/quotes" class="block">Quotes</a>
+                    <a href="/themes" class="block">Themes</a>
+                    <a href="/profile" class="block">Profile</a>
+                    <a href="/logout" class="block">Logout</a>
+                {% else %}
+                    <a href="/login" class="block">Login</a>
+                    <a href="/register" class="block">Register</a>
+                {% endif %}
+            </div>
 
             <!-- Page content -->
             <main class="max-w-5xl mx-auto px-4">
@@ -167,6 +206,19 @@
             });
         });
 
+    });
+    </script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("mobileMenuToggle");
+        const menu = document.getElementById("mobileMenu");
+
+        if (!btn || !menu) return;
+
+        btn.addEventListener("click", () => {
+            menu.classList.toggle("hidden");
+        });
     });
     </script>
 </body>

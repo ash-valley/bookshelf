@@ -8,18 +8,20 @@
     {% if current_user.is_authenticated %}
 
         <!-- Greeting with theme-aware icon -->
-        <h1 class="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-2">
+        <h1 class="text-3xl md:text-4xl font-bold mb-6 flex items-center">
             Welcome back, {{ current_user.username }}
 
-            {% if current_user.theme == "spring" %}
-                🌿
-            {% elif current_user.theme == "midnight" %}
-                🌙
-            {% elif current_user.theme == "fireplace" %}
-                🔥
-            {% else %}
-                🌿
-            {% endif %}
+            <span class="icon">
+                {% if current_user.theme == "spring" %}
+                    {% include "icons/leaf.svg" %}
+                {% elif current_user.theme == "midnight" %}
+                    {% include "icons/moon.svg" %}
+                {% elif current_user.theme == "fireplace" %}
+                    {% include "icons/candle.svg" %}
+                {% else %}
+                    {% include "icons/leaf.svg" %}
+                {% endif %}
+            </span>
         </h1>
 
 
@@ -42,11 +44,11 @@
                 {% if featured_book.cover_url %}
                 <img src="{{ featured_book.cover_url }}"
                      alt="Featured book cover"
-                     class="grid-item grid-item-to-move w-40 rounded-lg shadow border border-gray-300 mb-6 md:mb-0">
+                     class="grid-item  w-40 rounded-lg shadow border border-gray-300 mb-6 md:mb-0">
                 {% endif %}
 
                 <!-- Text block -->
-                <div class="grid-item">
+                <div class="grid-item grid-item-to-move">
 
                     <h3 class="text-xl font-bold mb-2">
                         {{ featured_book.title }}
@@ -137,17 +139,17 @@
         <!--       GUEST LANDING PAGE        -->
         <!-- =============================== -->
 
-        <div class="text-center py-16">
+        <div class="text-center pt-10 pb-20 sm:pt-16 sm:pb-24">
 
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                Welcome to Bookshelf 🌱
+                Welcome to Bookshelf
             </h1>
 
             <hr class="section-divider">
 
             <p class="intro-text text-gray-700 max-w-[38rem] mx-auto mb-8">
                 Imagine a place where you can be in the company of your books and make a home for them.
-                Create shelves by genre or reading status, save memorable quotes, choose a background
+                Create shelves, save memorable quotes and your book notes, choose a background
                 theme that reflects your mood, and enjoy your reading journey.
             </p>
 

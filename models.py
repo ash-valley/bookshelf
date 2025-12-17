@@ -56,14 +56,15 @@ class Book(db.Model):
 class Collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    position = db.Column(db.Integer, nullable=False, default=0)
 
     collection_entries = db.relationship(
         "CollectionBook",
         backref="collection",
         cascade="all, delete-orphan",
-        order_by="CollectionBook.position"
+        order_by="CollectionBook.position",
+        overlaps="books_list,collections"
     )
 
     @property
@@ -79,7 +80,7 @@ class CollectionBook(db.Model):
     position = db.Column(db.Integer, nullable=True)
 
     # Relationship to Book
-    book = db.relationship("Book", backref="collection_entries")
+    book = db.relationship("Book", backref="collection_entries", overlaps="books_list,collections")
 
 
 # ----------------------

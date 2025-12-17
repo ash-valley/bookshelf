@@ -2,7 +2,7 @@
 {% block title %}{{ book.title }} — Book Details{% endblock %}
 
 {% block content %}
-<div class="mt-12 max-w-5xl mx-auto">
+<div class="mt-12">
 
     <!-- Header Layout -->
     <div class="flex flex-col md:flex-row gap-10">
@@ -10,8 +10,8 @@
         <!-- Cover -->
         {% if book.cover_url %}
         <img src="{{ book.cover_url }}"
-             alt="Cover of {{ book.title }}"
-             class="w-48 rounded-xl shadow-lg">
+            alt="Cover of {{ book.title }}"
+            class="w-48 rounded-xl shadow-lg">
         {% endif %}
 
         <!-- Info Section -->
@@ -43,17 +43,17 @@
                 <div class="flex gap-3 text-sm">
 
                     <button type="submit" name="status" value="to-read"
-                        class="status-to-read rounded-full border transition cursor-pointer">
+                        class="status-to-read rounded-full border transition cursor-pointer {% if book.status == 'to-read' %}ring-2 ring-offset-2 ring-black/40{% else %}opacity-50{% endif %}">
                         To Read
                     </button>
 
                     <button type="submit" name="status" value="reading"
-                        class="status-reading rounded-full border transition cursor-pointer">
+                        class="status-reading rounded-full border transition cursor-pointer {% if book.status == 'reading' %}ring-2 ring-offset-2 ring-black/40{% else %}opacity-50{% endif %}">
                         Reading
                     </button>
 
                     <button type="submit" name="status" value="finished"
-                        class="status-finished rounded-full border transition cursor-pointer">
+                        class="status-finished rounded-full border transition cursor-pointer {% if book.status == 'finished' %}ring-2 ring-offset-2 ring-black/40{% else %}opacity-50{% endif %}">
                         Finished
                     </button>
 
@@ -65,7 +65,7 @@
 
     <!-- Description -->
     {% if book.description %}
-    <div class="mt-12 max-w-5xl mx-auto">
+    <div class="mt-12">
         <h2 class="text-2xl font-semibold mb-4">Description</h2>
         <p class="text-gray-800 leading-relaxed text-lg">
             {{ book.description }}
@@ -74,7 +74,7 @@
     {% endif %}
 
         <!-- Collections Section -->
-    <div class="mt-12 max-w-5xl mx-auto">
+    <div class="mt-12">
         <div class="flex justify-between items-center mb-3">
             <h2 class="text-2xl font-semibold">Collections</h2>
 
@@ -89,7 +89,7 @@
         {% if book.collections %}
             <ul class="space-y-4 list-none pl-0">
                 {% for col in book.collections %}
-                    <li name="collectionDisplay" class="flex justify-between items-center bg-white/60 p-3 rounded-lg shadow relative">
+                    <li name="collectionDisplay" class="flex items-center gap-3 bg-white/60 p-3 rounded-lg shadow">
                         <a href="{{ url_for('view_collection', col_id=col.id) }}"
                         name="collection_list" class="font-medium no-underline hover:underline">
                             {{ col.name }}
@@ -100,7 +100,7 @@
                             type="button"
                             name="delete"
                             aria-label="Remove from collection"
-                            class="absolute top-3 right-3 w-8 h-8 rounded-full transition"
+                            class="ml-auto w-8 h-8 rounded-full transition flex-shrink-0"
                             data-delete-message="Remove this book from the collection?"
                             data-delete-url="{{ url_for('remove_from_collection', col_id=col.id, book_id=book.id) }}"
                         >
@@ -118,7 +118,7 @@
     </div>
 
     <!-- Notes Section -->
-    <div class="mt-12 max-w-5xl mx-auto">
+    <div class="mt-12">
         <h2 class="text-2xl font-semibold mb-3">Your Notes</h2>
 
         <form action="{{ url_for('update_notes', book_id=book.id) }}" method="POST">
@@ -142,7 +142,7 @@
     </div>
 
     <!-- Quotes Section -->
-    <div class="mt-12 max-w-5xl mx-auto">
+    <div class="mt-12">
         <div class="flex justify-between items-center mb-3">
             <h2 class="text-2xl font-semibold">Quotes from this Book</h2>
 
@@ -237,7 +237,7 @@
 
 <!-- Add to Collection Modal -->
 <div id="collectionModal" 
-     class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
 
     <div class="bg-white rounded-lg p-6 shadow-xl w-80">
 
@@ -274,7 +274,7 @@
 
 <!-- Add Quote Modal -->
 <div id="addQuoteModal"
-     class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
 
     <div class="bg-white rounded-lg p-6 shadow-xl w-96">
 
@@ -313,7 +313,7 @@
 
 <!-- Edit Quote Modal -->
 <div id="editQuoteModal"
-     class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
 
     <div class="bg-white rounded-lg p-6 shadow-xl w-96">
 

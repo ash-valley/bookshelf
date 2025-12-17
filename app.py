@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, get_flashed_messages, session, jsonify
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
+from flask_migrate import Migrate
 from search_service import BookSearchService
 from dotenv import load_dotenv
 import os
@@ -19,6 +20,7 @@ app = Flask(__name__)
 
 BOOKS_PER_PAGE = 20
 
+migrate = Migrate(app, db)
 
 # Read environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -27,10 +29,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # --- Initialize the database ---
 db.init_app(app)
-
-# --- Create tables (User, Book, Quote) ---
-with app.app_context():
-    db.create_all()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -85,24 +83,43 @@ def home():
 
 
 @app.route('/library')
+@login_required
 def library():
-    # which "page" we are on (1, 2, 3...)
     page = request.args.get("page", 1, type=int)
     per_page = BOOKS_PER_PAGE
 
-    # base query: all this user's books, newest first or whatever order you prefer
-    base_query = Book.query.filter_by(user_id=current_user.id).order_by(Book.position.asc(), Book.id.asc())
+    # --- read filters from query params ---
+    status = request.args.get("status", "").strip()
+    genre = request.args.get("genre", "").strip()
+    author = request.args.get("author", "").strip()
 
-    total_books = base_query.count()
+    # --- base query ---
+    query = Book.query.filter_by(user_id=current_user.id)
 
-    # we want to show *all books up to this page*, not just one page slice
+    # --- apply filters ---
+    if status:
+        query = query.filter(Book.status == status)
+
+    if genre:
+        query = query.filter(Book.genres.ilike(f"%{genre}%"))
+
+    if author:
+        query = query.filter(Book.author == author)
+
+    # --- ordering (SHELF IS THE SOURCE OF TRUTH) ---
+    query = query.order_by(Book.position.asc(), Book.id.asc())
+
+    total_books = query.count()
+
     limit = per_page * page
-    books = base_query.limit(limit).all()
+    books = query.limit(limit).all()
 
-    has_more = total_books > limit  # is there anything left beyond what we show now?
+    has_more = total_books > limit
 
+    # --- collections for dropdown ---
     user_cols = Collection.query.filter_by(user_id=current_user.id).all()
 
+    # --- filter dropdown values ---
     genres_set = {
         g.strip()
         for b in current_user.books if b.genres
@@ -111,9 +128,6 @@ def library():
 
     authors_set = {b.author for b in current_user.books if b.author}
 
-    _ = genres_set
-    _ = authors_set
-
     return render_template(
         "library.html",
         books=books,
@@ -121,8 +135,11 @@ def library():
         has_more=has_more,
         collections=user_cols,
         genres=sorted(genres_set),
-        authors=sorted(authors_set)
-    )    
+        authors=sorted(authors_set),
+        selected_status=status,
+        selected_genre=genre,
+        selected_author=author
+    )  
 
 
 @app.route('/search-books')
@@ -176,6 +193,10 @@ def add_to_library():
     if not title:
         flash("Book must have a title.", "danger")
         return redirect(url_for('library'))
+    
+    max_pos = db.session.query(db.func.max(Book.position))\
+        .filter_by(user_id=current_user.id).scalar()
+    next_pos = (max_pos + 1) if max_pos is not None else 0
 
     # Create new Book object
     new_book = Book(
@@ -186,14 +207,14 @@ def add_to_library():
         year=year,
         genres=genres,
         status="to-read",  # Default status
-        user_id=current_user.id
+        user_id=current_user.id,
+        position=next_pos
     )
 
     # Save to DB
     db.session.add(new_book)
     db.session.commit()
 
-    flash(f'"{title}" added to your library!', "success")
     return redirect(url_for('library'))
 
 
@@ -211,7 +232,6 @@ def update_status(book_id):
     book.status = new_status
     db.session.commit()
 
-    flash(f"Status updated to '{new_status}'.", "success")
     return redirect(url_for('library'))
 
 
@@ -219,50 +239,14 @@ def update_status(book_id):
 @login_required
 def delete_book(book_id):
     book = Book.query.filter_by(id=book_id, user_id=current_user.id).first_or_404()
+
+    # delete dependent rows first 
+    CollectionBook.query.filter_by(book_id=book.id).delete()
+    Quote.query.filter_by(book_id=book.id, user_id=current_user.id).delete()
+
     db.session.delete(book)
     db.session.commit()
     return redirect(url_for("library"))
-
-
-@app.route("/filter-books")
-@login_required
-def filter_books():
-    status = request.args.get("status")
-    genre = request.args.get("genre")
-    author = request.args.get("author")
-
-    # Start with current user's books
-    query = Book.query.filter_by(user_id=current_user.id)
-
-    # Apply filters if present
-    if status:
-        query = query.filter(Book.status == status)
-
-    if genre:
-        query = query.filter(Book.genres.ilike(f"%{genre}%"))
-
-    if author:
-        query = query.filter(Book.author == author)
-
-    books = query.order_by(Book.id.asc()).all()
-
-    # Generate dropdown lists
-    genres_set = {
-        g.strip()
-        for b in current_user.books if b.genres
-        for g in b.genres.split(",")
-    }
-
-    authors_set = {b.author for b in current_user.books if b.author}
-
-    return render_template(
-        "library.html",
-        books=books,
-        page=1,
-        has_more=False,
-        genres=sorted(genres_set),
-        authors=sorted(authors_set)
-    )
 
 
 @app.route("/collections", methods=["GET", "POST"])
@@ -274,16 +258,27 @@ def collections():
         if not name:
             flash("Collection must have a name.", "danger")
             return redirect(url_for("collections"))
+        
+        max_pos = db.session.query(db.func.max(Collection.position))\
+            .filter_by(user_id=current_user.id).scalar()
 
-        new_col = Collection(name=name, user_id=current_user.id)
+        new_col = Collection(
+            name=name,
+            user_id=current_user.id,
+            position=(max_pos + 1) if max_pos is not None else 0
+        )
         db.session.add(new_col)
         db.session.commit()
 
-        flash(f'Collection "{name}" created!', "success")
         return redirect(url_for("collections"))
 
     # GET → show list of collections
-    user_cols = Collection.query.filter_by(user_id=current_user.id).all()
+    user_cols = (
+        Collection.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Collection.position.asc(), Collection.id.asc())
+        .all()
+    )
     return render_template("collections.html", collections=user_cols)
 
 
@@ -335,7 +330,6 @@ def add_to_collection(book_id):
     db.session.add(entry)
     db.session.commit()
 
-    flash("Book added to collection!", "success")
     return redirect(request.referrer or url_for("library"))
 
 
@@ -351,7 +345,6 @@ def remove_from_collection(col_id, book_id):
         db.session.delete(entry)
         db.session.commit()
 
-    flash("Book removed from collection.", "info")
     return redirect(request.referrer or url_for("view_collection", col_id=col_id))
 
 
@@ -362,7 +355,6 @@ def delete_collection(col_id):
     db.session.delete(col)
     db.session.commit()
 
-    flash("Collection deleted.", "info")
     return redirect(url_for("collections"))
 
 
@@ -379,8 +371,32 @@ def rename_collection(col_id):
     col.name = new_name
     db.session.commit()
 
-    flash("Collection renamed.", "success")
     return redirect(url_for("collections"))
+
+
+@app.route("/update-collections-order", methods=["POST"])
+@login_required
+def update_collections_order():
+    data = request.get_json(force=True) or {}
+    raw_order = data.get("order") or []
+
+    order = []
+    for value in raw_order:
+        try:
+            order.append(int(value))
+        except (TypeError, ValueError):
+            continue
+
+    for idx, col_id in enumerate(order):
+        col = Collection.query.filter_by(
+            id=col_id,
+            user_id=current_user.id
+        ).first()
+        if col:
+            col.position = idx
+
+    db.session.commit()
+    return jsonify({"status": "ok"})
 
 
 @app.route("/update-collection-order/<int:col_id>", methods=["POST"])
@@ -452,7 +468,6 @@ def update_notes(book_id):
     book.notes = request.form.get("notes", "").strip()
     db.session.commit()
 
-    flash("Notes updated.", "success")
     return redirect(url_for("book_detail", book_id=book.id))
 
 
@@ -519,7 +534,6 @@ def add_quote(book_id):
     db.session.add(quote)
     db.session.commit()
 
-    flash("Quote added!", "success")
     return redirect(url_for("book_detail", book_id=book.id))
 
 
@@ -532,7 +546,6 @@ def delete_quote(quote_id):
     db.session.delete(quote)
     db.session.commit()
 
-    flash("Quote deleted.", "info")
     return redirect(url_for("book_detail", book_id=book_id))
 
 
@@ -547,7 +560,6 @@ def edit_quote(quote_id):
     quote.comment = request.form.get("comment", "").strip()
 
     db.session.commit()
-    flash("Quote updated!", "success")
 
     return redirect(url_for("book_detail", book_id=quote.book_id))
 
@@ -630,8 +642,15 @@ def set_theme(theme):
 @app.route("/update-order", methods=["POST"])
 @login_required
 def update_order():
-    data = request.get_json()
-    order = data.get("order", [])
+    data = request.get_json(force=True) or {}
+    raw_order = data.get("order") or []
+
+    order = []
+    for value in raw_order:
+        try:
+            order.append(int(value))
+        except (TypeError, ValueError):
+            continue
 
     for idx, book_id in enumerate(order):
         book = Book.query.filter_by(id=book_id, user_id=current_user.id).first()
@@ -681,7 +700,6 @@ def edit_profile():
     current_user.email = new_email
     db.session.commit()
 
-    flash("Profile updated successfully!", "success")
     return redirect("/profile")
 
 
@@ -707,7 +725,6 @@ def change_password():
     current_user.password = generate_password_hash(new_pw)
     db.session.commit()
 
-    flash("Password updated successfully!", "success")
     return redirect("/profile")
 
 
@@ -721,6 +738,16 @@ def delete_account():
         return redirect("/profile")
 
     # Delete all user-related data
+    # delete join rows for user's collections
+    user_collection_ids = [c.id for c in Collection.query.filter_by(user_id=current_user.id).all()]
+    if user_collection_ids:
+        CollectionBook.query.filter(CollectionBook.collection_id.in_(user_collection_ids)).delete(synchronize_session=False)
+
+    # delete join rows for user's books (belt & suspenders)
+    user_book_ids = [b.id for b in Book.query.filter_by(user_id=current_user.id).all()]
+    if user_book_ids:
+        CollectionBook.query.filter(CollectionBook.book_id.in_(user_book_ids)).delete(synchronize_session=False)
+
     Book.query.filter_by(user_id=current_user.id).delete()
     Quote.query.filter_by(user_id=current_user.id).delete()
     Collection.query.filter_by(user_id=current_user.id).delete()
