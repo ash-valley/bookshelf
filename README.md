@@ -5,7 +5,7 @@
 #### Description:
 Bookshelf is a personal web application that allows you to create/manage your own virtual library of books, view books' summaries and write down personal notes, organize books into custom collections, and save memorable quotes. The project was developed as the final submission for CS50 Harvard course. The main focus was to create a place where users would be able to catalogue their books. As Bookshelf grew it acquired additional features to supplement core functionality and make for an overall cozy and enjoyable experience.  
 
-The application supports user registration and authentication, allowing each user to store/maintain a private library/catalogue of books. Users can add books, change their reading status, group them into collections (also allowing to create reading lists here), re-order books and collections using drag-and-drop, and view detailed book pages containing personal notes and related quotes (you can add notes/comments to each quote too). There is also a separate Quotes section that allows you to search, sort, and manage quotes independently from books, making it easy, for example, to pull up a quote by a specific tag.
+The application supports user registration and authentication, allowing each user to store/maintain a private library/catalogue of books. Users can add books (in English and Ukrainian languages), change their reading status, group them into collections (also allowing to create reading lists here), re-order books and collections using drag-and-drop, and view detailed book pages containing personal notes and related quotes (you can add notes/comments to each quote too). There is also a separate Quotes section that allows you to search, sort, and manage quotes independently from books, making it easy, for example, to pull up a quote by a specific tag.
 
 As the project grew in complexity, database schema changes became necessary. Instead of deleting/recreating the database, Flask-Migrate (Alembic) was introduced to handle database migration safely. This allowed new features, such as persistent ordering of collections, to be added without losing existing data. Introducing Flask-Migrate happened at the stage when implementing many-to-many relationships in database became necessary, Specifically, between books and collections, as one book can belong to many collections and one collection can contain multiple books.
 
@@ -62,7 +62,7 @@ This directory was generated and managed by Flask-Migrate (Alembic). It contains
 ## Features
 
 - User registration and authentication
-- Personal book library with search using Google Books API
+- Personal book library with search using Google Books API, search allowed for EN and UA languages
 - Drag-and-drop persistent ordering of books and collections, stored in the database
 - Server-side pagination 
 - Custom book collections
