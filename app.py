@@ -147,9 +147,10 @@ def library():
 def search_books():
     query = request.args.get('q', '').strip()
     sort = request.args.get('sort', 'relevance')
+    lang = request.args.get('lang', 'en')
     page = request.args.get('page', 1, type=int)
 
-    service = BookSearchService(query, sort)
+    service = BookSearchService(query, sort, lang)
     all_books = service.process()
     books_page = service.get_page(all_books, page)
 
@@ -170,9 +171,10 @@ def search_books():
 def search_books_json():
     query = request.args.get('q', '').strip()
     sort = request.args.get('sort', 'relevance')
+    lang = request.args.get('lang', 'en')
     page = request.args.get('page', type=int)
 
-    service = BookSearchService(query, sort)
+    service = BookSearchService(query, sort, lang)
     all_books = service.process()
     chunk = service.get_page(all_books, page)
 

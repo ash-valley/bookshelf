@@ -5,9 +5,10 @@ from difflib import get_close_matches
 
 
 class BookSearchService:
-    def __init__(self, query, sort="relevance"):
+    def __init__(self, query, sort="relevance", lang="en"):
         self.query = query.strip()
         self.sort = sort
+        self.lang = lang
         self.url = "https://www.googleapis.com/books/v1/volumes"
 
         # Configuration
@@ -63,7 +64,7 @@ class BookSearchService:
                 "q": q,
                 "maxResults": 40,
                 "printType": "books",
-                "langRestrict": "en"
+                "langRestrict": self.lang
             }
             resp = requests.get(self.url, params=params).json()
             items = resp.get("items", []) or []
@@ -84,7 +85,7 @@ class BookSearchService:
                     "q": q,
                     "maxResults": 20,
                     "printType": "books",
-                    "langRestrict": "en"
+                    "langRestrict": self.lang
                 }
                 resp = requests.get(self.url, params=params).json()
                 items = resp.get("items", []) or []
@@ -105,7 +106,7 @@ class BookSearchService:
         info = item.get("volumeInfo", {})
 
         # Language guard
-        if info.get("language") != "en":
+        if info.get("language") != self.lang:
             return False
         
         # Publication year guard (exclude very old works)

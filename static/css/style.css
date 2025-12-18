@@ -849,7 +849,8 @@ h3 {
 [name="author"],
 [name="genre"],
 [name="collection_id"],
-[name="status"] {
+[name="status"],
+[name="lang"] {
     font-family: 'Lora', serif;    
 }
 
