@@ -1472,8 +1472,9 @@ h3 {
 
     [name="shelfTop"],
     [name="shelfMiddle"],
-    [name="shelfBottom"] {
-        display: none;
+    [name="shelfBottom"],
+    .hidden.sm\:flex {
+        display: none !important;
     }
 
     [name="dragHandle"] {
@@ -1481,9 +1482,9 @@ h3 {
     }
 
     select {
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: rgba(255,255,255,0.9);
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background-color: rgba(255,255,255,0.9) !important;
 }
 
     #sortQuotes {
@@ -1498,9 +1499,10 @@ h3 {
 }
 
 @media (max-width: 1024px) and (hover: none) {
-    .shelf,
-    .bookshelf,
-    .horizontal-shelf {
+    [name="shelfTop"],
+    [name="shelfMiddle"],
+    [name="shelfBottom"],
+    .hidden.sm\:flex {
         display: none !important;
     }
 
@@ -1509,9 +1511,9 @@ h3 {
     }
 
     select {
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: rgba(255,255,255,0.9);
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    background-color: rgba(255,255,255,0.9) !important;
     }
 
     #sortQuotes {
