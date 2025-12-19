@@ -1218,7 +1218,7 @@ h3 {
     padding: 0;
     font-size: 1.1rem;
     line-height: 1;
-}
+    }
 
     [name="shelfTop"],
     [name="shelfMiddle"],
@@ -1338,23 +1338,23 @@ h3 {
     }
 
     #mobileMenu {
-        margin-top: 0.5rem;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.18);
-        -webkit-backdrop-filter: blur(12px);
-        backdrop-filter: blur(12px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-        width: fit-content;
-        min-width: 180px;
-        padding: 0.75rem 1.25rem;
-        margin-left: auto;
-        margin-right: 0;
+        position: fixed;          
+        top: 64px;               
+        right: 1rem;
+
+        z-index: 40;
 
         border-radius: 14px;
         background: rgba(255,255,255,0.22);
+        -webkit-backdrop-filter: blur(14px);
         backdrop-filter: blur(14px);
         box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+
+        width: fit-content;
+        min-width: 180px;
+        padding: 0.75rem 1.25rem;
     }
+
 
     #mobileMenu a {
         padding: 0.35rem 0;
@@ -1510,10 +1510,31 @@ h3 {
         display: none !important;
     }
 
+    .modal select,
+    .modal-input select,
+    [name="collection_id"] {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.25);
+
+        background: rgba(255,255,255,0.9);
+        font-family: 'Lora', serif;
+        font-size: 0.95rem;
+
+        box-sizing: border-box;
+    }
+
     select {
     -webkit-appearance: none !important;
     appearance: none !important;
     background-color: rgba(255,255,255,0.9) !important;
+    }
+
+    #sortQuotes {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 
     #sortQuotes {
@@ -1535,6 +1556,60 @@ h3 {
     .drag-handle,
     [name="dragHandle"] {
         display: none !important;
+    }
+
+    /* ✅ Kill horizontal shelves on ALL tablets (even 1366px iPads) */
+    [name="shelfTop"],
+    [name="shelfMiddle"],
+    [name="shelfBottom"] {
+        display: none !important;
+    }
+
+    /* Hide the wrapper row that Tailwind turns into flex at sm+ */
+    div.hidden.sm\:flex.col-span-full {
+        display: none !important;
+    }
+
+    /* Make selects styleable on iPad Safari */
+    select {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+    }
+
+    select[name="lang"],
+    select[name="status"],
+    select[name="genre"],
+    select[name="author"],
+    select[name="sort"],
+    select[name="collection_id"] {
+        color: #1a1a1a !important;
+        background-color: rgba(255,255,255,0.9) !important;
+        border: 1px solid rgba(0,0,0,0.25) !important;
+    }
+
+    select[name="lang"] option,
+    select[name="status"] option,
+    select[name="genre"] option,
+    select[name="author"] option,
+    select[name="sort"] option,
+    select[name="collection_id"] option {
+        color: #1a1a1a !important;
+    }
+
+    .modal select,
+    .modal-input select,
+    [name="collection_id"] {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.25);
+
+        background: rgba(255,255,255,0.9);
+        font-family: 'Lora', serif;
+        font-size: 0.95rem;
+
+        box-sizing: border-box;
     }
 }
 
