@@ -34,6 +34,7 @@
                             transition z-20 select-none">
                         ☰
                     </div>
+
                     
                     <!-- Delete button -->
                     <button 
@@ -158,10 +159,16 @@ document.addEventListener("DOMContentLoaded", () => {
     new Sortable(grid, {
         animation: 150,
         ghostClass: "opacity-40",
-        handle: ".drag-handle",
+        forceFallback: true,
+        fallbackTolerance: 5,
 
-        delay: 220,
+        // Desktop: handle only
+        handle: isTouch ? null : ".drag-handle",
+
+        // Tablet: long-press anywhere
+        delay: isTouch ? 250 : 0,
         delayOnTouchOnly: true,
+        touchStartThreshold: 5,
 
         onEnd() {
             const order = [...grid.querySelectorAll(".collection-card")]
@@ -173,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ order })
             });
         }
-    })
+    });
 });
 </script>
 
