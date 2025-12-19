@@ -78,7 +78,7 @@
                     <div id="booksGrid" class="grid grid-flow-row grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
                         {% for book in books %}
-                            <div name="bookCard" class="relative group p-4 backdrop-blur-md bg-white/70  
+                            <div name="bookCard" draggable="false" class="relative group p-4 backdrop-blur-md bg-white/70  
                                         rounded-xl shadow-md hover:shadow-xl transition-transform duration-300 
                                         transform hover:scale-[1.02] border border-white/30" data-book-id="{{ book.id }}">
 
@@ -276,20 +276,22 @@
                 animation: 150,
                 ghostClass: "opacity-40",
 
-                forceFallback: true,
-                fallbackTolerance: 5,
+                // ❌ REMOVE forceFallback
+                // forceFallback: true,
 
-                // ✅ iPad behavior: long-press anywhere on the card to drag
+                // ✅ Let browser handle pointer events naturally
+                fallbackOnBody: true,
+
                 handle: isTouch ? null : ".drag-handle",
-                delay: isTouch ? 180 : 0,
-                delayOnTouchOnly: true,
-                touchStartThreshold: 4,
 
-                // ✅ Don’t start drag when user interacts with controls
-                filter: "a, button, input, textarea, select, option, label, img",
+                delay: isTouch ? 220 : 0,
+                delayOnTouchOnly: true,
+                touchStartThreshold: 6,
+
+                filter: "a, button, input, textarea, select, option, label",
                 preventOnFilter: true,
 
-                onEnd: function () {
+                onEnd() {
                     const order = [...grid.querySelectorAll("[data-book-id]")]
                         .map(el => el.dataset.bookId);
 
