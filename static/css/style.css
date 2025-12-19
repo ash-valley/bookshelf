@@ -1647,4 +1647,7 @@ h3 {
     pointer-events: none !important;
 }
 
+.drag-surface { cursor: grab; }
+.sortable-chosen .drag-surface,
+.sortable-drag .drag-surface { cursor: grabbing; }
 

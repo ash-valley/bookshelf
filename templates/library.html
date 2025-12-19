@@ -88,6 +88,8 @@
                                     ☰
                                 </div>
 
+                                <div class="drag-surface absolute inset-0 z-[5]" aria-hidden="true"></div>
+
                                 <div class="relative z-10 flex flex-col items-center text-center">
                                     <div class="h-12 flex items-center justify-center px-2">
                                         <h2 name="bookCardText" class="text-xl font-bold tracking-tight leading-tight line-clamp-2">
@@ -282,7 +284,7 @@
                 // ✅ Let browser handle pointer events naturally
                 fallbackOnBody: true,
 
-                handle: isTouch ? null : ".drag-handle",
+                handle: isTouch ? ".drag-surface" : ".drag-handle",
 
                 delay: isTouch ? 220 : 0,
                 delayOnTouchOnly: true,

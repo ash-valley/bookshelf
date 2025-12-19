@@ -34,6 +34,8 @@
                             transition z-20 select-none">
                         ☰
                     </div>
+
+                    <div class="drag-surface absolute inset-0 z-[5]" aria-hidden="true"></div>
                     
                     <!-- Delete button -->
                     <button 
@@ -60,7 +62,7 @@
                     </button>
 
                     <!-- Collection Content -->
-                    <a href="{{ url_for('view_collection', col_id=col.id) }}" class="no-underline">
+                    <a href="{{ url_for('view_collection', col_id=col.id) }}" class="relative z-10 no-underline">
                         <h2 name="bookCardText" name="quotesBook" class="text-xl font-semibold mb-2 no-underline">{{ col.name }}</h2>
                         <p name="bookCardText" name="quotesBook" class="text-gray-600 text-sm no-underline">
                             {{ col.collection_entries|length }} book{{ col.collection_entries|length != 1 and 's' or '' }}
@@ -160,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ghostClass: "opacity-40",
         forceFallback: true,
         fallbackTolerance: 5,
-        handle: isTouch ? null : ".drag-handle",
+        handle: isTouch ? ".drag-surface" : ".drag-handle",
         delay: isTouch ? 250 : 0,
         delayOnTouchOnly: true,
 

@@ -17,7 +17,7 @@
                     <div name="bookCard" class="relative group p-4 pt-7 pb-3 backdrop-blur-md bg-white/70  
                                 rounded-xl shadow-md hover:shadow-xl transition" data-book-id="{{ book.id }}">
 
-                        <div name="dragHandle" class="drag-handle absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/10
+                        <div name="dragHandle" class="drag-handle absolute top-1.5 left-1.5 w-7 h-7 rounded-full bg-black/10
                                     flex items-center justify-center text-gray-700 cursor-grab hover:bg-black/20
                                     transition z-20 select-none">
                             ☰
@@ -30,14 +30,14 @@
                         </a>
 
                         <!-- Title -->
-                        <h2 name="quotesBook" class="mt-3 text-lg font-bold text-center line-clamp-2">{{ book.title }}</h2>
+                        <h2 name="quotesBook" class="mt-5 text-lg font-bold text-center line-clamp-2">{{ book.title }}</h2>
 
                         <!-- Remove from collection -->
                         <button
                             type="button"
                             aria-label="Remove from collection"
                             name="delete"
-                            class="absolute top-1 right-1 w-7 h-7 flex items-center justify-center
+                            class="absolute top-1 right-1 w-8 h-8 flex items-center justify-center
                                 rounded-full bg-red-500/80 text-white shadow hover:scale-110 transition z-20"
                             data-delete-message="Remove this book from the collection?"
                             data-delete-url="{{ url_for('remove_from_collection', col_id=collection.id, book_id=book.id) }}"
