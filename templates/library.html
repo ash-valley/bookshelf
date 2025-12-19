@@ -268,14 +268,27 @@
             const grid = document.getElementById("booksGrid");
             if (!grid) return;
 
+            const isTouch =
+                ("ontouchstart" in window) ||
+                (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+
             new Sortable(grid, {
                 animation: 150,
                 ghostClass: "opacity-40",
-                handle: ".drag-handle",
+
+                // ✅ iPad behavior: long-press anywhere on the card to drag
+                handle: isTouch ? null : ".drag-handle",
+                delay: isTouch ? 180 : 0,
+                delayOnTouchOnly: true,
+                touchStartThreshold: 4,
+
+                // ✅ Don’t start drag when user interacts with controls
+                filter: "a, button, input, textarea, select, option, label",
+                preventOnFilter: true,
+
                 onEnd: function () {
-                    const order = [...document.querySelectorAll("[data-book-id]")].map(
-                        el => el.dataset.bookId
-                    );
+                    const order = [...grid.querySelectorAll("[data-book-id]")]
+                        .map(el => el.dataset.bookId);
 
                     fetch("/update-order", {
                         method: "POST",
@@ -286,6 +299,7 @@
             });
         });
         </script>
+
 
         <script>
         document.addEventListener("DOMContentLoaded", () => {

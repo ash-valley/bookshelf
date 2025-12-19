@@ -843,7 +843,6 @@ h3 {
 [name="new_password"],
 [name="confirm_password"],
 [name="confirm_text"]
-[name="name"],
 [name="search"],
 [name="sort"],
 [name="author"],
@@ -852,6 +851,10 @@ h3 {
 [name="status"],
 [name="lang"] {
     font-family: 'Lora', serif;    
+}
+
+[name="name"] {
+    font-family: 'Lora', serif !important;  
 }
 
 [name="navBarLink"] {
@@ -1215,15 +1218,38 @@ h3 {
     }
 
     [name="delete"] {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+    font-size: 1.1rem;
+    line-height: 1;
+}
 
     [name="shelfTop"],
     [name="shelfMiddle"],
     [name="shelfBottom"] {
         display: none;
+    }
+
+    .modal select,
+    .modal-input select,
+    [name="collection_id"] {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.25);
+
+        background: rgba(255,255,255,0.9);
+        font-family: 'Lora', serif;
+        font-size: 0.95rem;
+
+        box-sizing: border-box;
     }
 
     /* Unified horizontal rhythm */
@@ -1263,6 +1289,21 @@ h3 {
         display: block;
     }
 
+    .spring-theme a {
+        color: #7bffe0fb !important;
+        text-decoration: none;
+    }
+
+    .midnight-theme a {
+        color: #dce6f4 !important;
+        text-decoration: none;
+    }
+
+    .fireplace-theme a {
+        color: #f8ab7a !important;
+        text-decoration: none;
+    }
+
     form[action="/search-books"] {
         width: 100%;
     }
@@ -1275,6 +1316,18 @@ h3 {
     #mobileMenu a {
         font-size: 1.1rem;
         padding: 0.25rem 0;
+    }
+
+    .spring-theme #mobileMenu {
+        background: #035a51be;
+    }
+
+    .midnight-theme #mobileMenu {
+        background: #0b1522;
+    }
+
+    .fireplace-theme #mobileMenu {
+        background: #310000;
     }
 
     nav.navbar {
@@ -1301,11 +1354,25 @@ h3 {
         -webkit-backdrop-filter: blur(12px);
         backdrop-filter: blur(12px);
         box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        width: fit-content;
+        min-width: 180px;
+        padding: 0.75rem 1.25rem;
+        margin-left: auto;
+        margin-right: 0;
+
+        border-radius: 14px;
+        background: rgba(255,255,255,0.22);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.22);
     }
 
     #mobileMenu a {
         padding: 0.35rem 0;
         display: block;
+        font-size: 1.15rem;
+        font-weight: 500;
+        padding: 0.4rem 0;
+        letter-spacing: 0.2px;
     }  
     
     .grid-container {
@@ -1345,6 +1412,19 @@ h3 {
     textarea[name="notes"] {
         min-height: 140px;
     }
+
+    [name="quotesDisplay"] {
+        padding-top: 3rem !important;
+    }
+
+    [name="lang"],
+    [name="status"],
+    [name="genre"],
+    [name="author"],
+    [name="sort"],
+    [name="collection_id"] {
+        color: #1a1a1a !important;
+    }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
@@ -1369,6 +1449,31 @@ h3 {
     #booksGrid > div.hidden.sm\:flex {
         display: none !important;
     }
+
+    .modal select,
+    .modal-input select,
+    [name="collection_id"] {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.25);
+
+        background: rgba(255,255,255,0.9);
+        font-family: 'Lora', serif;
+        font-size: 0.95rem;
+
+        box-sizing: border-box;
+    }
 }
+
+@media (max-width: 1024px) and (hover: none) {
+    .shelf,
+    .bookshelf,
+    .horizontal-shelf {
+        display: none !important;
+    }
+}
+
 
 

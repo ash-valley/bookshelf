@@ -25,7 +25,7 @@
     {% if collections %}
         <div id="collectionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {% for col in collections %}
-                <div name="quotesDisplay" class="collection-card relative p-6 rounded-xl bg-white/70 shadow-md hover:shadow-xl transition cursor-grab" data-id="{{ col.id }}">
+                <div name="quotesDisplay" class="collection-card relative p-6 rounded-xl bg-white/70 shadow-md hover:shadow-xl transition" data-id="{{ col.id }}">
 
                     <div
                         name="dragHandle"
@@ -147,64 +147,32 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    // 🔒 Disable drag on phones only
-    const isMobile = window.matchMedia("(max-width: 640px)").matches;
-    if (isMobile) return;
+    const isPhone = window.matchMedia("(max-width: 640px)").matches;
+    if (isPhone) return;
+
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
 
     const grid = document.getElementById("collectionsGrid");
     if (!grid) return;
 
-    let dragged = null;
+    new Sortable(grid, {
+        animation: 150,
+        ghostClass: "opacity-40",
+        handle: isTouch ? null : ".drag-handle",
+        delay: isTouch ? 250 : 0,
+        delayOnTouchOnly: true,
 
-    grid.querySelectorAll(".collection-card").forEach(card => {
-        const handle = card.querySelector(".drag-handle");
-        if (!handle) return;
+        onEnd() {
+            const order = [...grid.querySelectorAll(".collection-card")]
+                .map(el => el.dataset.id);
 
-        handle.addEventListener("mousedown", () => {
-            card.draggable = true;
-        });
-
-        handle.addEventListener("mouseup", () => {
-            card.draggable = false;
-        });
-
-        card.addEventListener("dragstart", () => {
-            dragged = card;
-            card.classList.add("opacity-50");
-        });
-
-        card.addEventListener("dragend", () => {
-            card.classList.remove("opacity-50");
-            card.draggable = false;
-            dragged = null;
-            saveOrder();
-        });
-
-        card.addEventListener("dragover", e => {
-            e.preventDefault();
-            if (!dragged || dragged === card) return;
-
-            const rect = card.getBoundingClientRect();
-            const next = (e.clientY - rect.top) / rect.height > 0.5;
-
-            grid.insertBefore(
-                dragged,
-                next ? card.nextSibling : card
-            );
-        });
+            fetch("/update-collections-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ order })
+            });
+        }
     });
-
-    function saveOrder() {
-        const order = Array.from(
-            grid.querySelectorAll(".collection-card")
-        ).map(el => el.dataset.id);
-
-        fetch("/update-collections-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ order })
-        });
-    }
 });
 </script>
 

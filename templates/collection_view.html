@@ -74,8 +74,11 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const isMobile = window.matchMedia("(max-width: 640px)").matches;
-        if (isMobile) return;
+
+        const isPhone = window.matchMedia("(max-width: 640px)").matches;
+        if (isPhone) return;
+
+        const isTouch = window.matchMedia("(pointer: coarse)").matches;
 
         const grid = document.getElementById("collectionGrid");
         if (!grid) return;
@@ -83,11 +86,18 @@
         new Sortable(grid, {
             animation: 150,
             ghostClass: "opacity-40",
-            handle: ".drag-handle",
-            onEnd: function () {
-                const order = [...document.querySelectorAll("[data-book-id]")].map(
-                    el => parseInt(el.dataset.bookId, 10)
-                );
+
+            // Desktop: handle only
+            handle: isTouch ? null : ".drag-handle",
+
+            // Tablet: long-press anywhere
+            delay: isTouch ? 250 : 0,
+            delayOnTouchOnly: true,
+            touchStartThreshold: 5,
+
+            onEnd() {
+                const order = [...grid.querySelectorAll("[data-book-id]")]
+                    .map(el => parseInt(el.dataset.bookId, 10));
 
                 fetch("{{ url_for('update_collection_order', col_id=collection.id) }}", {
                     method: "POST",
@@ -98,6 +108,7 @@
         });
     });
     </script>
+
 
     <script>
     document.addEventListener("DOMContentLoaded", () => {
