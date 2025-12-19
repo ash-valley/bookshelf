@@ -276,6 +276,9 @@
                 animation: 150,
                 ghostClass: "opacity-40",
 
+                forceFallback: true,
+                fallbackTolerance: 5,
+
                 // ✅ iPad behavior: long-press anywhere on the card to drag
                 handle: isTouch ? null : ".drag-handle",
                 delay: isTouch ? 180 : 0,

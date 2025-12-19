@@ -1480,14 +1480,11 @@ h3 {
         display: none !important;
     }
 
-    [name="lang"],
-    [name="status"],
-    [name="genre"],
-    [name="author"],
-    [name="sort"],
-    [name="collection_id"] {
-        color: #1a1a1a !important;
-    }
+    select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: rgba(255,255,255,0.9);
+}
 
     #sortQuotes {
         padding-top: 1rem;
@@ -1511,13 +1508,10 @@ h3 {
         display: none !important;
     }
 
-    [name="lang"],
-    [name="status"],
-    [name="genre"],
-    [name="author"],
-    [name="sort"],
-    [name="collection_id"] {
-        color: #1a1a1a !important;
+    select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: rgba(255,255,255,0.9);
     }
 
     #sortQuotes {
@@ -1526,5 +1520,20 @@ h3 {
     }
 }
 
+@media (max-width: 1024px) {
+    [name="shelfTop"],
+    [name="shelfMiddle"],
+    [name="shelfBottom"],
+    .hidden.sm\:flex {
+        display: none !important;
+    }
+}
+
+@media (pointer: coarse) {
+    .drag-handle,
+    [name="dragHandle"] {
+        display: none !important;
+    }
+}
 
 

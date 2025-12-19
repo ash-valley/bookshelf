@@ -158,6 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
     new Sortable(grid, {
         animation: 150,
         ghostClass: "opacity-40",
+        forceFallback: true,
+        fallbackTolerance: 5,
         handle: isTouch ? null : ".drag-handle",
         delay: isTouch ? 250 : 0,
         delayOnTouchOnly: true,
