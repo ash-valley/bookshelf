@@ -1567,11 +1567,6 @@ h3 {
 }
 
 @media (pointer: coarse) {
-    .drag-handle,
-    [name="dragHandle"] {
-        display: none !important;
-    }
-
     /* ✅ Kill horizontal shelves on ALL tablets (even 1366px iPads) */
     [name="shelfTop"],
     [name="shelfMiddle"],
@@ -1632,22 +1627,4 @@ h3 {
 }
 
 
-/* ============================= */
-/* Drag & Drop interaction fixes */
-/* ============================= */
-
-/* Ensure card content remains interactive */
-[name="bookCard"] * {
-    pointer-events: auto;
-}
-
-/* Disable interaction ONLY while dragging */
-.sortable-chosen,
-.sortable-drag {
-    pointer-events: none !important;
-}
-
-.drag-surface { cursor: grab; }
-.sortable-chosen .drag-surface,
-.sortable-drag .drag-surface { cursor: grabbing; }
 

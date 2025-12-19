@@ -86,9 +86,7 @@
                                             flex items-center justify-center text-gray-700 cursor-grab hover:bg-black/20
                                             transition z-20 select-none">
                                     ☰
-                                </div>
-
-                                <div class="drag-surface absolute inset-0 z-[5]" aria-hidden="true"></div>
+                                </div>        
 
                                 <div class="relative z-10 flex flex-col items-center text-center">
                                     <div class="h-12 flex items-center justify-center px-2">
@@ -277,21 +275,11 @@
             new Sortable(grid, {
                 animation: 150,
                 ghostClass: "opacity-40",
+                handle: ".drag-handle",
 
-                // ❌ REMOVE forceFallback
-                // forceFallback: true,
-
-                // ✅ Let browser handle pointer events naturally
-                fallbackOnBody: true,
-
-                handle: isTouch ? ".drag-surface" : ".drag-handle",
-
-                delay: isTouch ? 220 : 0,
+                delay: 220,
                 delayOnTouchOnly: true,
                 touchStartThreshold: 6,
-
-                filter: "a, button, input, textarea, select, option, label",
-                preventOnFilter: true,
 
                 onEnd() {
                     const order = [...grid.querySelectorAll("[data-book-id]")]

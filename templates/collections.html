@@ -34,8 +34,6 @@
                             transition z-20 select-none">
                         ☰
                     </div>
-
-                    <div class="drag-surface absolute inset-0 z-[5]" aria-hidden="true"></div>
                     
                     <!-- Delete button -->
                     <button 
@@ -160,10 +158,9 @@ document.addEventListener("DOMContentLoaded", () => {
     new Sortable(grid, {
         animation: 150,
         ghostClass: "opacity-40",
-        forceFallback: true,
-        fallbackTolerance: 5,
-        handle: isTouch ? ".drag-surface" : ".drag-handle",
-        delay: isTouch ? 250 : 0,
+        handle: ".drag-handle",
+
+        delay: 220,
         delayOnTouchOnly: true,
 
         onEnd() {
@@ -176,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ order })
             });
         }
-    });
+    })
 });
 </script>
 
