@@ -315,7 +315,6 @@ def add_to_collection(book_id):
     # Prevent duplicates
     existing = CollectionBook.query.filter_by(collection_id=col.id, book_id=book.id).first()
     if existing:
-        flash("Book is already in the collection.", "info")
         return redirect(request.referrer or url_for("library"))
 
     # Determine next position

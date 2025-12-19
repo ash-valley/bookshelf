@@ -842,19 +842,16 @@ h3 {
 [name="old_password"],
 [name="new_password"],
 [name="confirm_password"],
-[name="confirm_text"]
+[name="confirm_text"],
 [name="search"],
 [name="sort"],
+[name="name"],
 [name="author"],
 [name="genre"],
 [name="collection_id"],
 [name="status"],
 [name="lang"] {
     font-family: 'Lora', serif;    
-}
-
-[name="name"] {
-    font-family: 'Lora', serif !important;  
 }
 
 [name="navBarLink"] {
@@ -1015,7 +1012,6 @@ h3 {
     font-weight: 300;
     letter-spacing: 0.3px;
 }
-
 
 
 /* Elegant Section Divider */
@@ -1209,12 +1205,6 @@ h3 {
     .status-finished {
         padding: 0.45rem 0.8rem;
         font-size: 0.9rem;
-    }
-
-    .drag-handle {
-        width: 30px;
-        height: 30px;
-        font-size: 1rem;
     }
 
     [name="delete"] {
@@ -1425,6 +1415,20 @@ h3 {
     [name="collection_id"] {
         color: #1a1a1a !important;
     }
+
+    [name="dragHandle"] {
+        display: none !important;
+    }
+
+    #sortQuotes {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    [name="lang"] {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
@@ -1465,6 +1469,35 @@ h3 {
 
         box-sizing: border-box;
     }
+
+    [name="shelfTop"],
+    [name="shelfMiddle"],
+    [name="shelfBottom"] {
+        display: none;
+    }
+
+    [name="dragHandle"] {
+        display: none !important;
+    }
+
+    [name="lang"],
+    [name="status"],
+    [name="genre"],
+    [name="author"],
+    [name="sort"],
+    [name="collection_id"] {
+        color: #1a1a1a !important;
+    }
+
+    #sortQuotes {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    [name="lang"] {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
 }
 
 @media (max-width: 1024px) and (hover: none) {
@@ -1472,6 +1505,24 @@ h3 {
     .bookshelf,
     .horizontal-shelf {
         display: none !important;
+    }
+
+    [name="dragHandle"] {
+        display: none !important;
+    }
+
+    [name="lang"],
+    [name="status"],
+    [name="genre"],
+    [name="author"],
+    [name="sort"],
+    [name="collection_id"] {
+        color: #1a1a1a !important;
+    }
+
+    #sortQuotes {
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 }
 
