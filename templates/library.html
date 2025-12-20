@@ -64,7 +64,7 @@
                 <button type="submit" class="btn rounded-lg">
                     Apply
                 </button>
-                <a href="{{ url_for('library') }}" name="resetBtnLibrary"class="btn rounded-lg no-underline">
+                <a href="{{ url_for('library') }}" name="resetBtnLibrary" class="btn rounded-lg no-underline">
                     Reset
                 </a>
 
@@ -107,7 +107,7 @@
                                     </div>
 
                                     {% if book.cover_url %}
-                                        <a href="/book/{{ book.id }}" class="no-drag w-36 aspect-[2/3] overflow-hidden rounded shadow mt-2 mb-2 block group-hover:shadow-lg transition cursor-pointer">
+                                        <a href="/book/{{ book.id }}" class="no-drag book-link w-36 aspect-[2/3] overflow-hidden rounded shadow mt-2 mb-2 block group-hover:shadow-lg transition cursor-pointer">
                                             <img 
                                                 src="{{ book.cover_url }}" 
                                                 class="w-full h-full object-cover"
@@ -301,6 +301,15 @@
         });
         </script>
 
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".book-link").forEach(link => {
+                link.addEventListener("touchstart", (e) => {
+                    e.stopPropagation(); // 🔑 critical for iOS
+                }, { passive: true });
+            });
+        });
+        </script>
 
         <script>
         document.addEventListener("DOMContentLoaded", () => {
