@@ -1354,8 +1354,33 @@ h3 {
         width: fit-content;
         min-width: 180px;
         padding: 0.75rem 1.25rem;
+
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+
+        transition:
+            opacity 0.25s ease,
+            transform 0.25s ease;
+
+        transform-origin: top right;
     }
 
+    #mobileMenu.open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    #mobileMenu::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: rgba(255,255,255,0.35);
+    }
 
     #mobileMenu a {
         padding: 0.35rem 0;
@@ -1364,7 +1389,24 @@ h3 {
         font-weight: 500;
         padding: 0.4rem 0;
         letter-spacing: 0.2px;
+
+        opacity: 0;
+        transform: translateY(-4px);
+        transition:
+            opacity 0.2s ease,
+            transform 0.2s ease;
     }  
+
+    #mobileMenu.open a {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    #mobileMenu.open a:nth-child(1) { transition-delay: 0.04s; }
+    #mobileMenu.open a:nth-child(2) { transition-delay: 0.07s; }
+    #mobileMenu.open a:nth-child(3) { transition-delay: 0.10s; }
+    #mobileMenu.open a:nth-child(4) { transition-delay: 0.13s; }
+    #mobileMenu.open a:nth-child(5) { transition-delay: 0.16s; }
     
     .grid-container {
         grid-template-columns: 1fr;
@@ -1434,6 +1476,11 @@ h3 {
 
     [name="new_name"] {
         font-family: 'Lora', serif;
+    }
+
+    .spring-theme [name="resetBtn"],
+    .spring-theme [name="resetBtnLibrary"] {
+        color: #dbfffa !important;
     }
 }
 
@@ -1571,6 +1618,10 @@ h3 {
     [name="shelfTop"],
     [name="shelfMiddle"],
     [name="shelfBottom"] {
+        display: none !important;
+    }
+
+    [name="dragHandle"] {
         display: none !important;
     }
 

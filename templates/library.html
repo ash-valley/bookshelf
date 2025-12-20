@@ -64,7 +64,7 @@
                 <button type="submit" class="btn rounded-lg">
                     Apply
                 </button>
-                <a href="{{ url_for('library') }}" class="btn rounded-lg no-underline">
+                <a href="{{ url_for('library') }}" name="resetBtnLibrary"class="btn rounded-lg no-underline">
                     Reset
                 </a>
 
@@ -107,7 +107,7 @@
                                     </div>
 
                                     {% if book.cover_url %}
-                                        <a href="/book/{{ book.id }}" class="w-36 aspect-[2/3] overflow-hidden rounded shadow mt-2 mb-2 block group-hover:shadow-lg transition cursor-pointer">
+                                        <a href="/book/{{ book.id }}" class="no-drag w-36 aspect-[2/3] overflow-hidden rounded shadow mt-2 mb-2 block group-hover:shadow-lg transition cursor-pointer">
                                             <img 
                                                 src="{{ book.cover_url }}" 
                                                 class="w-full h-full object-cover"
@@ -133,7 +133,7 @@
                                     </div>
 
                                     <!-- Status Selector -->
-                                    <form action="/update-status/{{ book.id }}" method="POST" class="mt-2">
+                                    <form action="/update-status/{{ book.id }}" method="POST" class="no-drag mt-2">
                                         <div class="flex gap-2 text-sm justify-center flex-wrap">
 
                                             <button type="submit" name="status" value="to-read" class="status-to-read rounded-full border transition cursor-pointer {% if book.status == 'to-read' %}ring-2 ring-offset-2 ring-black/40{% else %}opacity-50{% endif %}">To Read</button>
@@ -145,7 +145,7 @@
                                         </div>
                                     </form>
 
-                                    <form action="/add-to-collection/{{ book.id }}" method="POST" class="mt-2 collection-form">
+                                    <form action="/add-to-collection/{{ book.id }}" method="POST" class="no-drag mt-2 collection-form">
                                         <select name="collection_id"
                                                 aria-label="Add to collection"
                                                 class="collection-select rounded bg-white/70"
@@ -158,7 +158,7 @@
                                     </form>
 
                                     <form action="/delete-book/{{ book.id }}" method="POST"
-                                        class="delete-form relative z-20 mt-3"
+                                        class="no-drag delete-form relative z-20 mt-3"
                                         data-booktitle="{{ book.title }}">
                                         <button name="delete" type="submit"
                                             class="w-8 h-8 flex items-center justify-center rounded-full
@@ -262,28 +262,34 @@
 
         <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const isMobile = window.matchMedia("(max-width: 640px)").matches;
-            if (isMobile) return;
+            const isPhone = window.matchMedia("(max-width: 640px)").matches;
+            if (isPhone) return;
+
+            const isTouch = window.matchMedia("(pointer: coarse)").matches;
 
             const grid = document.getElementById("booksGrid");
             if (!grid) return;
 
-            const isTouch =
-                ("ontouchstart" in window) ||
-                (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-
             new Sortable(grid, {
                 animation: 150,
                 ghostClass: "opacity-40",
-                handle: ".drag-handle",
+                forceFallback: true,
+                fallbackTolerance: 5,
 
-                delay: 220,
+                // Desktop: handle only
+                handle: isTouch ? null : ".drag-handle",
+
+                // Tablet: long-press anywhere
+                delay: isTouch ? 250 : 0,
                 delayOnTouchOnly: true,
-                touchStartThreshold: 6,
+                touchStartThreshold: 5,
+
+                filter: ".no-drag",
+                preventOnFilter: true,
 
                 onEnd() {
                     const order = [...grid.querySelectorAll("[data-book-id]")]
-                        .map(el => el.dataset.bookId);
+                        .map(el => el.dataset.bookId, 10);
 
                     fetch("/update-order", {
                         method: "POST",

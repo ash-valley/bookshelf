@@ -87,7 +87,7 @@
             </nav>
 
             <div id="mobileMenu"
-                class="hidden sm:hidden px-6 py-4 space-y-3">
+                class="sm:hidden px-6 py-4 space-y-3">
 
                 {% if current_user.is_authenticated %}
                     <a href="/library" class="block">Library</a>
@@ -217,7 +217,7 @@
         if (!btn || !menu) return;
 
         btn.addEventListener("click", () => {
-            menu.classList.toggle("hidden");
+            menu.classList.toggle("open");
         });
     });
     </script>
