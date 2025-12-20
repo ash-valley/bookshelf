@@ -2,7 +2,12 @@
 
 #### Video Demo: <URL HERE>
 
-#### Description:
+Bookshelf is a personal web application that allows you to create/manage your own virtual library of books, view books' summaries and write down personal notes, organize books into custom collections, and save memorable quotes. 
+
+#### Live Demo: <https://bookshelf-d1wu.onrender.com/>
+Note: The application requires user registration to access personal libraries and collections.
+
+#### Project Description:
 Bookshelf is a personal web application that allows you to create/manage your own virtual library of books, view books' summaries and write down personal notes, organize books into custom collections, and save memorable quotes. The project was developed as the final submission for CS50 Harvard course. The main focus was to create a place where users would be able to catalogue their books. As Bookshelf grew it acquired additional features to supplement core functionality and make for an overall cozy and enjoyable experience.  
 
 The application supports user registration and authentication, allowing each user to store/maintain a private library/catalogue of books. Users can add books (in English and Ukrainian languages), change their reading status, group them into collections (also allowing to create reading lists here), re-order books and collections using drag-and-drop, and view detailed book pages containing personal notes and related quotes (you can add notes/comments to each quote too). There is also a separate Quotes section that allows you to search, sort, and manage quotes independently from books, making it easy, for example, to pull up a quote by a specific tag.
