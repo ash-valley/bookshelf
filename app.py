@@ -211,9 +211,10 @@ def add_to_library():
         flash("This book is already in your library.", "info")
         return redirect(url_for('library'))
     
-    max_pos = db.session.query(db.func.max(Book.position))\
-        .filter_by(user_id=current_user.id).scalar()
-    next_pos = (max_pos + 1) if max_pos is not None else 0
+    Book.query.filter_by(user_id=current_user.id).update(
+        {Book.position: Book.position + 1},
+        synchronize_session=False
+    )
 
     # Create new Book object
     new_book = Book(
@@ -225,7 +226,7 @@ def add_to_library():
         genres=genres,
         status="to-read",  # Default status
         user_id=current_user.id,
-        position=next_pos
+        position=0
     )
 
     # Save to DB
@@ -332,16 +333,17 @@ def add_to_collection(book_id):
     if existing:
         return redirect(request.referrer or url_for("library"))
 
-    # Determine next position
-    max_position = db.session.query(db.func.max(CollectionBook.position))\
-                     .filter_by(collection_id=col.id).scalar()
-    next_position = (max_position + 1) if max_position is not None else 0
+    # Shift existing entries down
+    CollectionBook.query.filter_by(collection_id=col.id).update(
+        {CollectionBook.position: CollectionBook.position + 1},
+        synchronize_session=False
+    )
 
     # Create new entry
     entry = CollectionBook(
         collection_id=col.id,
         book_id=book.id,
-        position=next_position
+        position=0
     )
     db.session.add(entry)
     db.session.commit()
