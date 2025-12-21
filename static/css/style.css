@@ -11,6 +11,20 @@ main {
     z-index: 2;
 }
 
+.app-footer {
+    position: relative;
+    z-index: 2;
+
+    margin-top: 3rem;
+    padding: 1.25rem 0;
+
+    text-align: center;
+    font-size: 0.9rem;
+    letter-spacing: 0.2px;
+
+    opacity: 0.75;
+}
+
 /* ---------------------------------- */
 /* NAVBAR DEPTH SYSTEM (UNIVERSAL)     */
 /* ---------------------------------- */
