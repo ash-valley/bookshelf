@@ -102,6 +102,18 @@
                 {% endif %}
             </div>
 
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }} auto-dismiss">
+                        {{ message }}
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
             <!-- Page content -->
             <main class="max-w-5xl mx-auto px-4">
                 {% block content %}{% endblock %}

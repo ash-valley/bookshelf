@@ -8,20 +8,6 @@
             Log In
         </h2>
 
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=True) %}
-            {% if messages %}
-                {% for category, msg in messages %}
-                    <div class="mb-4 p-3 rounded-md 
-                        {% if category == 'success' %} bg-green-200 text-green-800 
-                        {% elif category == 'danger' %} bg-red-200 text-red-800 
-                        {% else %} bg-blue-200 text-blue-800 {% endif %}">
-                        {{ msg }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
         <form method="POST" novalidate>
             {{ form.hidden_tag() }}
 

@@ -200,6 +200,17 @@ def add_to_library():
         flash("Book must have a title.", "danger")
         return redirect(url_for('library'))
     
+    # DUPLICATE CHECK
+    existing_book = Book.query.filter_by(
+        user_id=current_user.id,
+        title=title,
+        author=author
+    ).first()
+
+    if existing_book:
+        flash("This book is already in your library.", "info")
+        return redirect(url_for('library'))
+    
     max_pos = db.session.query(db.func.max(Book.position))\
         .filter_by(user_id=current_user.id).scalar()
     next_pos = (max_pos + 1) if max_pos is not None else 0

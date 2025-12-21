@@ -1162,6 +1162,56 @@ h3 {
     transform: translateY(10px)
 }
 
+.flash-container {
+    position: fixed;
+    top: 5rem; /* below navbar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.flash {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+}
+
+/* Categories */
+.flash-success { background: #1f875397; }
+.flash-danger  { background: #c53030; }
+.flash-error   { background: #c53030; }
+.flash-info    { background: #13569dce; }
+
+.auto-dismiss {
+    animation: flashFadeOut 4s ease forwards;
+}
+
+/* visible → fade → gone */
+@keyframes flashFadeOut {
+    0% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-5px);
+        pointer-events: none;
+    }
+}
+
 
 /* ============================= */
 /* MOBILE: Library layout fixes  */
