@@ -803,6 +803,15 @@ p {
     letter-spacing: 0.2px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .collection-form {
+        cursor: pointer;
+    }
+    .collection-form select {
+        cursor: pointer;
+    }
+}
+
 /* --------------------------- */
 /* TYPOGRAPHY SYSTEM           */
 /* --------------------------- */
