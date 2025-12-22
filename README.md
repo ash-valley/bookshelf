@@ -1,6 +1,6 @@
 # Bookshelf
 
-#### Video Demo: <URL HERE>
+#### Video Demo: <https://youtu.be/40edGQ3WFgI>
 
 Bookshelf is a personal web application that allows you to create/manage your own virtual library of books, view books' summaries and write down personal notes, organize books into custom collections, and save memorable quotes. 
 
